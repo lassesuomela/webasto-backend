@@ -21,6 +21,7 @@ API_KEY=SECRET_API_KEY
 
 ## Edit nginx.conf file in reverse_proxy folder
 
+Also these:
 ```
 ssl_certificate
 ssl_certificate_key
@@ -28,3 +29,65 @@ ssl_certificate_key
 server_name
 ```
 ---
+
+## Here you can get your SSL certificates from Cloudflare
+![SSL_1](/images/ssl_1.png)
+![SSL_2](/images/ssl_2.png)
+## Endpoints (GET and POST)
+
+All of these enpoints require an *api_key*. Except /robots.txt because it is intended for crawling bots like the one that Google uses.
+
+These are the **GET** endpoints:
+```
+/robots.txt
+/getTimers
+/getStatus/:id
+/getLocation
+/getTemp
+/getVoltage
+/refreshLogs
+```
+And these are the **POST** endpoints:
+```
+/updateTimers
+/updateStatus/:id
+/updateLocation
+/updateTemp
+/updateVoltage
+/updateLogs
+```
+---
+## Usage
+
+GET example request: http://sub.domain.tld/getTimers?api_key=secret_api_key.
+This will return formatted JSON like this:
+```
+{
+	"time": "06:59:00",
+	"time2": "13:25:00",
+	"enabled": 1,
+	"enabled2": 1,
+	"onTime": 10
+}
+```
+![get_timers](images/get_timers.png)
+
+POST example request: http://sub.domain.tld/updateVoltage
+and in the request body:
+
+```
+{
+	"api_key":"secret_api_key",
+	"voltage":"0"
+}
+```
+![post_voltage](/images/post_voltage.png)
+
+## Status codes
+
+```
+200 OK - if the request was successful
+201 Created - if the request was successful and data was added to the database
+400 Bad request - if one or more of the required arguments are missing
+401 Unauthorized - if the api_key doesn't match servers key 
+```
