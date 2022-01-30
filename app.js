@@ -66,8 +66,8 @@ app.get('/getTimers', (req, res) => {
         if(api_key == undefined){
             return res.sendStatus(400).send({message:"One or more variables are undefined"});
         }
-            //let currentDay = new Date().getDay();
-            let currentDay = 1;
+            let currentDay = new Date().getDay();
+            //let currentDay = 1; // for debugging on weekends
             //console.log(currentDay);
             
             if(currentDay < 1 || currentDay > 5){
