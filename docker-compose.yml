@@ -2,7 +2,7 @@ version: '3'
 
 services:
 
-  # Proxies requests to internal services
+  # Nginx will proxy requests to Nodejs server
   reverse-proxy:
     image: nginx:latest
     container_name: reverse_proxy_webasto-srv
@@ -16,7 +16,7 @@ services:
       - 80:80
     network_mode: "host"
 
-  # generates weather reports
+  # Nodejs backend
   webasto-srv:
     image: webasto-srv:latest
     container_name: webasto-srv
