@@ -1,16 +1,17 @@
 require('dotenv').config()
 
 let express = require('express');
-let mysql = require('mysql');
 
 let https = require('https')
 let parseString = require('xml2js').parseString;
 let Http2ServerRequest = require('http2');
+let db = require('./configs/db');
 
 const rateLimit = require('express-rate-limit');
 const helmet = require("helmet");
 const morgan = require("morgan");
 
+let timerRouter = require('./routes/timerRoutes')
 
 let app = express();
 
@@ -30,18 +31,11 @@ const limiter = rateLimit({
 
 app.use(helmet());
 app.use(express.json());
-app.use(morgan('tiny'));
-
+app.use(morgan('dev'));
+app.use('/api', timerRouter);
 //app.use(limiter);
 // create connection to mysql server
-let pool = mysql.createPool({
-    connectionLimit: 10,
-    host: process.env.DB_HOST,
-    user: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE,
-    timezone: 'Europe/Helsinki'
-});
+
 
 app.get('/robots.txt', function (req, res) {
 
@@ -53,135 +47,6 @@ app.get('/robots.txt', function (req, res) {
     res.send("User-agent: *\nDisallow: /\nX-Robots-Tag: noindex, nofollow");
 });
 
-app.get('/getTimers', (req, res) => {
-
-    // set 'Connection' header to 'Close'
-    res.setHeader('Connection', 'close');
-
-    console.log(req.path);
-    
-    let ip = req.header('x-forwarded-for') || req.socket.remoteAddress;
-    let api_key = req.query.api_key;
-
-    let ua = req.get('user-agent');
-    console.log(ua);
-
-    if(api_key == process.env.API_KEY){
-        console.log(`Authorized access from IP: '${ip}'`);
-        // if one of the variables are undefined then send 400 status code to the client
-        if(api_key == undefined){
-            return res.sendStatus(400).send({message:"One or more variables are undefined"});
-        }
-            let currentDay = new Date().getDay();
-            //let currentDay = 1; // for debugging on weekends
-            //console.log(currentDay);
-            
-            if(currentDay < 1 || currentDay > 5){
-                return res.sendStatus(404);
-            }
-            sql_query = "SELECT * FROM timers WHERE id = ?";
-            inserts = [currentDay]
-            sql_query = mysql.format(sql_query, inserts);
-            //console.log(sql_query);
-            
-            // attempt to query mysql server with the sql_query 
-            pool.query(sql_query, (error, result) =>{
-                if (error){
-                    // on error log the error to console and send 500 status code to client
-                    console.log(error);
-                    return res.sendStatus(500);
-                };
-                //console.log(result);
-                if(result.length > 0){
-
-                    let time = result[0].time;
-                    let time2 = result[0].time2;
-                    let enabled = result[0].enabled;
-                    let enabled2 = result[0].enabled2;
-                    let onTime = result[0].onTime;
-
-                    let jsonData = JSON.stringify(
-                    {
-                        "time":time,
-                        "time2":time2,
-                        "enabled":enabled,
-                        "enabled2":enabled2,
-                        "onTime":onTime
-                    });
-                    //console.log(jsonData);
-                    return res.status(200).send(jsonData);
-                }else{
-                    // status not found
-                    console.log('Status not set');
-                    return res.status(500).send({status:"Status not set"});
-                }
-            });
-            
-
-    }else{
-      // if client sends invalid api key then send 401 status code to the client
-  
-      console.log(`Unauthorized access using API key '${api_key}' from IP: '${ip}'`);
-      return res.sendStatus(401);
-    }
-})
-
-app.post('/updateTimers', (req, res) => {
-
-    // set 'Connection' header to 'Close'
-    res.setHeader('Connection', 'close');
-
-    console.log(req.path);
-    
-    let ip = req.header('x-forwarded-for') || req.socket.remoteAddress;
-    let {api_key} = req.body;
-
-    let ua = req.get('user-agent');
-    console.log(ua);
-    console.log(req.body);
-
-    if(api_key == process.env.API_KEY){
-        console.log(`Authorized access from IP: '${ip}'`);
-        // if one of the variables are undefined then send 400 status code to the client
-        if(api_key == undefined){
-            return res.sendStatus(400).send({message:"One or more variables are undefined"});
-        }
-
-        let time, time2, enabled, enabled2, onTime;
-        for(let i = 1; i < 6; i++){
-            
-            time = req.body[i]['time'];
-            time2 = req.body[i]['time2'];
-            enabled = req.body[i]['enabled'];
-            enabled2 = req.body[i]['enabled2'];
-            onTime = req.body[i]['onTime'];
-            
-            sql_query = "UPDATE timers SET time = ?, time2 = ?, enabled = ? , enabled2 = ?, onTime = ? WHERE id = ?";
-            inserts = [time, time2, enabled, enabled2, onTime, i]
-            sql_query = mysql.format(sql_query, inserts);
-            //console.log(sql_query);
-            
-            // attempt to query mysql server with the sql_query 
-            pool.query(sql_query, (error, result) =>{
-                if (error){
-                    // on error log the error to console and send 500 status code to client
-                    console.log(error);
-                    return res.sendStatus(500);
-                };
-            });
-            
-        }
-
-        return res.sendStatus(200);
-            
-        
-    }else{
-      // if client sends invalid api key then send 401 status code to the client
-  
-      console.log(`Unauthorized access using API key '${api_key}' from IP: '${ip}'`);
-      return res.sendStatus(401);
-    }
-})
 
 app.get('/getStatus/:id', (req, res) =>{
 
@@ -820,7 +685,7 @@ app.listen(port, () => {
 
 process.on('SIGINT', function() {
     console.log("Caught interrupt signal");
-    pool.end(function (err) {
+    db.end(function (err) {
         // all connections in the pool have ended
         console.log('Closed all pool connections');
         process.exit();
