@@ -8,10 +8,13 @@ let parseString = require('xml2js').parseString;
 let Http2ServerRequest = require('http2');
 
 const rateLimit = require('express-rate-limit');
+const helmet = require("helmet");
+const morgan = require("morgan");
+
 
 let app = express();
 
-const port = process.env.DOCKER_APP_PORT || 8080;
+const port = process.env.DOCKER_APP_PORT || 80;
 
 app.set('trust proxy', '127.0.0.1');
 
@@ -25,8 +28,11 @@ const limiter = rateLimit({
     }
 });
 
+app.use(helmet());
 app.use(express.json());
-app.use(limiter);
+app.use(morgan('tiny'));
+
+//app.use(limiter);
 // create connection to mysql server
 let pool = mysql.createPool({
     connectionLimit: 10,
@@ -654,6 +660,7 @@ app.post('/updateVoltage', (req, res) =>{
     
     // get variables from query
     const {api_key, voltage} = req.body;
+
     let sql_query = "";
   
     // check if client provided api key matches with the servers api key
