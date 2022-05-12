@@ -34,24 +34,21 @@ const limiter = rateLimit({
 app.use(helmet());
 app.use(express.json());
 app.use(morgan('dev'));
-app.use(auth);
 
 app.use('/api', timerRouter);
 app.use('/api', logRouter);
 app.use(limiter);
-// create connection to mysql server
-
 
 app.get('/robots.txt', function (req, res) {
 
     // set 'Connection' header to 'Close'
     res.setHeader('Connection', 'close');
 
-    console.log(req.path);
     res.type('text/plain');
     res.send("User-agent: *\nDisallow: /\nX-Robots-Tag: noindex, nofollow");
 });
 
+app.use(auth);
 
 app.get('/getStatus/:id', (req, res) =>{
 
@@ -168,191 +165,6 @@ app.post('/updateStatus/:id', (req, res) =>{
       return res.sendStatus(401);
     }
 })
-
-app.get('/getLocation', (req, res) =>{
-
-    // set 'Connection' header to 'Close'
-    res.setHeader('Connection', 'close');
-
-    console.log(req.path);
-    
-    let ip = req.header('x-forwarded-for') || req.socket.remoteAddress;
-
-    let {api_key} = req.query;
-
-    let ua = req.get('user-agent');
-    console.log(ua);
-    //console.log(req.query);
-
-    if(api_key == process.env.API_KEY){
-        console.log(`Authorized access from IP: '${ip}'`);
-        // if one of the variables are undefined then send 400 status code to the client
-        if(api_key == undefined){
-            return res.sendStatus(400).send({message:"One or more variables are undefined"});
-        }
-        
-        sql_query = "SELECT * FROM gpsData ORDER BY id DESC";
-
-        sql_query = mysql.format(sql_query);
-        
-        // attempt to query mysql server with the sql_query 
-        pool.query(sql_query, (error, result) =>{
-            if (error){
-                // on error log the error to console and send 500 status code to client
-                console.log(error);
-                return res.sendStatus(500);
-            };
-            
-            // if we found the card we send 200 status code
-            //console.log(result[0]);
-
-            if(result.length > 0){
-                let lat = result[0].lat;
-                let lon = result[0].lng;
-                let timestamp = result[0].timestamp;
-                let road, house_number, city, postcode;
-                
-                const options = {
-                    hostname: 'nominatim.openstreetmap.org',
-                    port: 443,
-                    path: `/reverse?lat=${lat}&lon=${lon}`,
-                    method: 'GET',
-                    headers: { 'User-Agent': 'Mozilla/5.0 GSM ESP32 Tracker' }
-                }
-
-                const httpReq = https.request(options, httpRes => {
-                    let statusCode = httpRes.statusCode;
-                    //console.log(`statusCode: ${statusCode}`)
-
-                    httpRes.on('data', xml => {
-                        
-                        parseString(xml, function (err, reqResult) {
-                            let jsonString = JSON.stringify(reqResult);
-                            let locationData = JSON.parse(jsonString);
-                            
-                            console.log(jsonString);
-                            if(statusCode != 200){
-                                console.log("Error on OSM reverse API");
-                                return res.status(500);
-                            }
-
-                            try {
-                                let country = locationData["reversegeocode"]["addressparts"][0]["country"][0];
-                            } catch (error) {
-                                console.log("Coordinates are invalid");
-                                return res.status(500);
-                            }
-                            
-                            try{
-                                road = locationData["reversegeocode"]["addressparts"][0]["road"][0];
-                                house_number = locationData["reversegeocode"]["addressparts"][0]["house_number"][0];
-                            } catch (error){
-                                console.log(error);
-                                return res.status(500);
-                            }
-                            
-                            try {
-                                city = locationData["reversegeocode"]["addressparts"][0]["city"][0];
-                            } catch (error) {
-                                town = locationData["reversegeocode"]["addressparts"][0]["town"][0];
-                            }
-                            
-                            postcode = locationData["reversegeocode"]["addressparts"][0]["postcode"][0];
-                            
-                            if(city == undefined){
-                                city = town;
-                            }
-                        });
-
-                        let datajson = JSON.stringify(
-                            {
-                                "road":road,
-                                "house_number":house_number,
-                                "city":city,
-                                "postcode":postcode,
-                                "timestamp":timestamp
-                            });
-                        
-                        return res.status(200).send(datajson);
-                    })
-                    
-                    
-                })
-                
-                httpReq.on('error', error => {
-                    console.error(error);
-                    return res.status(500).send({error:"OSM API ERROR"});
-                })
-
-                httpReq.end()
-                
-            }else{
-                // status not found
-                console.log('GPS data not found');
-                return res.status(500).send({"error":"GPS data not found"});
-            }
-        });
-
-    }else{
-      // if client sends invalid api key then send 401 status code to the client
-  
-      console.log(`Unauthorized access using API key '${api_key}' from IP: '${ip}'`);
-      return res.sendStatus(401);
-    }
-})
-
-app.post('/updateLocation', (req, res) =>{
-
-    // set 'Connection' header to 'Close'
-    res.setHeader('Connection', 'close');
-
-    console.log(req.path);
-    // get ip address
-    let ip = req.header('x-forwarded-for') || req.socket.remoteAddress;
-  
-    // get variables from query
-    const {api_key, lat, lng, alt, speed, sat} = req.body;
-    let sql_query = "";
-
-    let ua = req.get('user-agent');
-    console.log(ua);
-    console.log(req.body);
-  
-    // check if client provided api key matches with the servers api key
-    if(api_key == process.env.API_KEY){
-        // if one of the variables are undefined then send 400 status code to the client
-        if(lat == undefined || lng == undefined || alt == undefined || speed == undefined || sat == undefined){
-            return res.sendStatus(400);
-        }
-    
-        console.log(req.query);
-    
-        sql_query = "INSERT INTO gpsData (lat, lng, alt, speed, sat) VALUES (?, ?, ?, ?, ?)";
-        let inserts = [lat, lng, alt, speed, sat];
-    
-        // insert variables into the sql_query string
-        sql_query = mysql.format(sql_query, inserts);
-    
-        // attempt to query mysql server with the sql_query 
-        pool.query(sql_query, (error, result) =>{
-            if (error){
-                // on error log the error to console and send 500 status code to client
-                console.log(error.code);
-                return res.sendStatus(500);
-            };
-            // on success send client success code
-            // console.log(sql_query);
-            // console.log(result);
-            console.log("Location data updated");
-            res.sendStatus(201);
-        });
-      
-    }else{
-      // if client sends invalid api key then send 401 status code to the client
-      res.sendStatus(401);
-      console.log(`Unauthorized access using API key '${api_key}' from IP ${ip}.`);
-    }
-});
 
 app.get('/getTemp', (req, res) =>{
     // set 'Connection' header to 'Close'
@@ -568,126 +380,12 @@ app.post('/updateVoltage', (req, res) =>{
     }
 });
 
-app.post('/updateLogs', (req, res) =>{
-
-    // set 'Connection' header to 'Close'
-    res.setHeader('Connection', 'close');
-
-    console.log(req.path);
-    // get ip address
-    let ip = req.header('x-forwarded-for') || req.socket.remoteAddress;
-  
-    let ua = req.get('user-agent');
-    console.log(ua);
-    
-    // get variables from query
-    const {api_key, startTime, endTime, onTime} = req.body;
-    let sql_query = "";
-  
-    // check if client provided api key matches with the servers api key
-    if(api_key == process.env.API_KEY){
-        // if voltage is undefined then send 400 status code to client client
-        if(startTime == undefined || endTime == undefined || onTime == undefined){
-            return res.sendStatus(400);
-        }
-    
-        console.log(req.body);
-    
-        sql_query = "INSERT INTO logs (startTime, endTime, onTime) VALUES (?, ?, ?)";
-        var inserts = [startTime, endTime, onTime];
-    
-        // insert variables into the sql_query string
-        sql_query = mysql.format(sql_query, inserts);
-    
-        // attempt to query mysql server with the sql_query 
-        pool.query(sql_query, (error, result) =>{
-            if (error){
-                // on error log the error to console and send 500 status code to client
-                console.log(error);
-                return res.sendStatus(500);
-            };
-            // on success send client success code
-            // console.log(sql_query);
-            console.log("Logs stored");
-            res.sendStatus(201);
-        });
-      
-    }else{
-        // if client sends invalid api key then send 401 status code to the client
-        res.sendStatus(401);
-        console.log(`Unauthorized access using API key '${api_key}' from IP ${ip}.`);
-    }
-});
-
-app.get('/refreshLogs', (req, res) =>{
-
-    // set 'Connection' header to 'Close'
-    res.setHeader('Connection', 'close');
-
-    console.log(req.path);
-    let ip = req.header('x-forwarded-for') || req.socket.remoteAddress;
-
-    var ua = req.get('user-agent');
-    console.log(ua);
-    const {api_key} = req.query;
-    console.log(req.query);
-
-    if(api_key == process.env.API_KEY){
-        console.log(`Authorized access from IP: '${ip}'`);
-        // if one of the variables are undefined then send 400 status code to the client
-        if(api_key == undefined){
-            return res.sendStatus(400).send({message:"One or more variables are undefined"});
-        }
-        
-        sql_query = "SELECT * FROM logs ORDER BY id DESC LIMIT 1";
-
-        sql_query = mysql.format(sql_query);
-        
-        // attempt to query mysql server with the sql_query 
-        pool.query(sql_query, (error, result) =>{
-            if (error){
-                // on error log the error to console and send 500 status code to client
-                console.log(error);
-                return res.sendStatus(500);
-            };
-            
-            // if we found the card we send 200 status code
-        
-            if(result.length > 0){
-                let startTime = result[0].startTime;
-                let endTime = result[0].endTime;
-                let onTime = result[0].onTime;
-
-                let payload = JSON.stringify(
-                {
-                    "startTime":startTime,
-                    "endTime":endTime,
-                    "onTime":onTime
-                });
-                
-                console.log(payload);
-                return res.status(200).send(payload);
-            }else{
-                // status not found
-                console.log('Logs not found');
-                return res.status(500).send({error:"Logs not found"});
-            }
-        });
-
-    }else{
-      // if client sends invalid api key then send 401 status code to the client
-  
-      console.log(`Unauthorized access using API key '${api_key}' from IP: '${ip}'`);
-      return res.sendStatus(401);
-    }
-})
-
-// start listening 
-
+// start the server
 app.listen(port, () => {
     console.log(`Listening at http://localhost:${port}`);
 });
 
+// handle ctrl + c
 process.on('SIGINT', function() {
     console.log("Caught interrupt signal");
     db.end(function (err) {
