@@ -11,7 +11,9 @@ const rateLimit = require('express-rate-limit');
 const helmet = require("helmet");
 const morgan = require("morgan");
 
-let timerRouter = require('./routes/timerRoutes')
+let timerRouter = require('./routes/timerRoutes');
+let logRouter = require('./routes/logRoutes');
+let auth = require('./configs/auth');
 
 let app = express();
 
@@ -20,8 +22,8 @@ const port = process.env.DOCKER_APP_PORT || 80;
 app.set('trust proxy', '127.0.0.1');
 
 const limiter = rateLimit({
-    windowMs: 60 * 1000 * 15, // 15 minute
-    max: 300, // limit each IP to 100 requests per windowMs
+    windowMs: 60 * 1000 * 15, // 15 minutes
+    max: 300, // limit each IP to 300 requests per 15 minutes
     headers: false,
     onLimitReached: function(req){
         let ip = req.header('x-forwarded-for') || req.socket.remoteAddress;
@@ -32,8 +34,11 @@ const limiter = rateLimit({
 app.use(helmet());
 app.use(express.json());
 app.use(morgan('dev'));
+app.use(auth);
+
 app.use('/api', timerRouter);
-//app.use(limiter);
+app.use('/api', logRouter);
+app.use(limiter);
 // create connection to mysql server
 
 
