@@ -1,27 +1,19 @@
 require('dotenv').config()
 
-let express = require('express');
+const express = require('express');
 
-let https = require('https')
-let parseString = require('xml2js').parseString;
-let Http2ServerRequest = require('http2');
-let db = require('./configs/db');
+const db = require('./configs/db');
+const auth = require('./configs/auth');
 
 const rateLimit = require('express-rate-limit');
 const helmet = require("helmet");
 const morgan = require("morgan");
 
-let timerRouter = require('./routes/timerRoutes');
-let logRouter = require('./routes/logRoutes');
-let statusRouter = require('./routes/statusRoutes');
-
-let auth = require('./configs/auth');
-
-let app = express();
+const timerRouter = require('./routes/timerRoutes');
+const logRouter = require('./routes/logRoutes');
+const statusRouter = require('./routes/statusRoutes');
 
 const port = process.env.DOCKER_APP_PORT || 80;
-
-app.set('trust proxy', '127.0.0.1');
 
 const limiter = rateLimit({
     windowMs: 60 * 1000 * 15, // 15 minutes
@@ -32,6 +24,10 @@ const limiter = rateLimit({
         console.log(`Rate limit exceeded from IP ${ip}`);
     }
 });
+
+let app = express();
+
+app.set('trust proxy', '127.0.0.1');
 
 app.use(helmet());
 app.use(express.json());

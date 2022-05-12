@@ -56,14 +56,13 @@ const modifyTimers = (req, res) => {
         onTime = req.body[i]['onTime'];
 
         let tmr = {"time":time, "time2":time2, "enabled":enabled, "enabled2":enabled2, "onTime":onTime, "id":i};
-        console.log(tmr);
         // attempt to query mysql server with the sql_query 
         timer.updateAll(tmr, (error, result) =>{
             if (error){
                 // on error log the error to console and send 500 status code to client
                 console.log(error);
                 return res.sendStatus(500);
-            };
+            }
         });
     }
 

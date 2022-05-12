@@ -2,9 +2,6 @@ const status = require('../models/statusModel');
 
 const getStatus = (req, res) =>{
 
-    // set 'Connection' header to 'Close'
-    res.setHeader('Connection', 'close');
-
     let id = req.params.id;
     // if one of the variables are undefined then send 400 status code to the client
     if(id === undefined){
@@ -18,7 +15,7 @@ const getStatus = (req, res) =>{
             // on error log the error to console and send 500 status code to client
             console.log(error);
             return res.sendStatus(500);
-        };
+        }
         
         // if we found the card we send 200 status code
     
@@ -29,7 +26,6 @@ const getStatus = (req, res) =>{
             let timestamp = result[0].timestamp;
             let rssi = result[0].rssi;
 
-            console.log(`Status: ${currentStatus} onTime: ${onTime} timestamp: ${timestamp}`);
             return res.status(200).send({
                 "status":currentStatus,
                 "onTime":onTime,
@@ -47,9 +43,6 @@ const getStatus = (req, res) =>{
 };
 
 const modifyStatus = (req, res) =>{
-
-    // set 'Connection' header to 'Close'
-    res.setHeader('Connection', 'close');
 
     let {newStatus, onTime, pulseSent, rssi} = req.body;
     let id = req.params.id;
@@ -73,7 +66,7 @@ const modifyStatus = (req, res) =>{
             // on error log the error to console and send 500 status code to client
             console.log(error);
             return res.sendStatus(500);
-        };
+        }
         
         //console.log(`New status: ${newStatus}`);
         return res.sendStatus(200);

@@ -6,8 +6,9 @@ const auth = (req, res, next) => {
     let ip = req.header('x-forwarded-for') || req.socket.remoteAddress;
     let apiKey;
 
-    console.log(req.query);
-    console.log(req.body);
+    console.log(`Query: ${req.query}`);
+    console.log(`Body: ${req.body}`);
+    
     if(req.query.apiKey === undefined) {
         apiKey = req.body.apiKey;
     }else{
@@ -18,7 +19,6 @@ const auth = (req, res, next) => {
     if(apiKey === undefined){
         console.log(`Unauthorized request from IP: ${ip}`);
         return res.sendStatus(400);
-        
     }
 
     if(apiKey === process.env.API_KEY){
