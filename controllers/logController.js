@@ -6,7 +6,7 @@ const updateLogs = (req, res) => {
     const {startTime, endTime, onTime} = req.body;
   
     // if voltage is undefined then send 400 status code to client client
-    if(startTime == undefined || endTime == undefined || onTime == undefined){
+    if(startTime === undefined || endTime === undefined || onTime === undefined){
         return res.sendStatus(400);
     }
 

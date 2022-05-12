@@ -13,6 +13,8 @@ const morgan = require("morgan");
 
 let timerRouter = require('./routes/timerRoutes');
 let logRouter = require('./routes/logRoutes');
+let statusRouter = require('./routes/statusRoutes');
+
 let auth = require('./configs/auth');
 
 let app = express();
@@ -34,12 +36,9 @@ const limiter = rateLimit({
 app.use(helmet());
 app.use(express.json());
 app.use(morgan('dev'));
-
-app.use('/api', timerRouter);
-app.use('/api', logRouter);
 app.use(limiter);
 
-app.get('/robots.txt', function (req, res) {
+app.get('/robots.txt', (req, res) => {
 
     // set 'Connection' header to 'Close'
     res.setHeader('Connection', 'close');
@@ -50,121 +49,12 @@ app.get('/robots.txt', function (req, res) {
 
 app.use(auth);
 
-app.get('/getStatus/:id', (req, res) =>{
+app.use('/api', timerRouter);
+app.use('/api', logRouter);
+app.use('/api', statusRouter);
 
-    // set 'Connection' header to 'Close'
-    res.setHeader('Connection', 'close');
+// use auth after robots.txt so it doesnt need authentication
 
-    console.log(req.path);
-    let ip = req.header('x-forwarded-for') || req.socket.remoteAddress;
-    let {api_key} = req.query;
-    let id = req.params.id;
-    let ua = req.get('user-agent');
-    console.log(ua);
-    
-    if(api_key == process.env.API_KEY){
-        console.log(`Authorized access from IP: '${ip}'`);
-        // if one of the variables are undefined then send 400 status code to the client
-        if(api_key == undefined){
-            return res.sendStatus(400).send({message:"One or more variables are undefined"});
-        }
-        
-        sql_query = "SELECT * FROM statusData WHERE id = ?";
-
-        inserts = [id]
-        sql_query = mysql.format(sql_query, inserts);
-        
-        // attempt to query mysql server with the sql_query 
-        pool.query(sql_query, (error, result) =>{
-            
-            if (error){
-                // on error log the error to console and send 500 status code to client
-                console.log(error);
-                return res.sendStatus(500);
-            };
-            
-            // if we found the card we send 200 status code
-        
-            if(result.length > 0){
-                let currentStatus = result[0].status;
-                let onTime = result[0].onTime;
-                let pulseSent = result[0].pulseSent;
-                let timestamp = result[0].timestamp;
-                let rssi = result[0].rssi;
- 
-                console.log(`Status: ${currentStatus} onTime: ${onTime} timestamp: ${timestamp}`);
-                return res.status(200).send({
-                    "status":currentStatus,
-                    "onTime":onTime,
-                    "timestamp":timestamp,
-                    "pulseSent":pulseSent,
-                    "rssi":rssi
-
-                });
-            }else{
-                // status not found
-                console.log('Status not set');
-                return res.status(500).send({status:"Status not set"});
-            }
-        });
-
-    }else{
-      // if client sends invalid api key then send 401 status code to the client
-  
-      console.log(`Unauthorized access using API key '${api_key}' from IP: '${ip}'`);
-      return res.sendStatus(401);
-    }
-})
-
-app.post('/updateStatus/:id', (req, res) =>{
-
-    // set 'Connection' header to 'Close'
-    res.setHeader('Connection', 'close');
-
-    console.log(req.path);
-    
-    let ip = req.header('x-forwarded-for') || req.socket.remoteAddress;
-    let {api_key, newStatus, onTime, pulseSent, rssi} = req.body;
-    let id = req.params.id;
-    let ua = req.get('user-agent');
-    console.log(ua);
-    console.log(req.body);
-    
-    if(pulseSent == 0 && id == 1){ 
-        pulseSent = new Date().getSeconds();
-    }
-    
-    if(api_key == process.env.API_KEY){
-        console.log(`Authorized access from IP: '${ip}'`);
-        // if one of the variables are undefined then send 400 status code to the client
-        if(api_key == undefined || newStatus == undefined){
-            return res.sendStatus(400).send({message:"One or more variables are undefined"});
-        }
-        
-        sql_query = "UPDATE statusData SET status = ?, onTime = ?, pulseSent = ? , rssi = ? WHERE id = ?";
-        inserts = [newStatus, onTime, pulseSent, rssi, id]
-        sql_query = mysql.format(sql_query, inserts);
-        //console.log(sql_query);
-        
-        // attempt to query mysql server with the sql_query 
-        pool.query(sql_query, (error, result) =>{
-            if (error){
-                // on error log the error to console and send 500 status code to client
-                console.log(error);
-                return res.sendStatus(500);
-            };
-            
-            //console.log(`New status: ${newStatus}`);
-            return res.sendStatus(200);
-        });
-
-    }else{
-      // if client sends invalid api key then send 401 status code to the client
-  
-      console.log(`Unauthorized access using API key '${api_key}' from IP: '${ip}'`);
-      return res.sendStatus(401);
-    }
-})
 
 app.get('/getTemp', (req, res) =>{
     // set 'Connection' header to 'Close'
