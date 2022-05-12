@@ -1,14 +1,14 @@
+require('dotenv').config()
+
 const express = require('express');
 const app = express();
+const bcrypt = require('bcrypt');
 
 const auth = (req, res, next) => {
 
     let ip = req.header('x-forwarded-for') || req.socket.remoteAddress;
     let apiKey;
 
-    console.log(`Query: ${req.query}`);
-    console.log(`Body: ${req.body}`);
-    
     if(req.query.apiKey === undefined) {
         apiKey = req.body.apiKey;
     }else{
@@ -21,12 +21,14 @@ const auth = (req, res, next) => {
         return res.sendStatus(400);
     }
 
-    if(apiKey === process.env.API_KEY){
-        next();
-    }else{
-        res.sendStatus(401);
-        console.log(`Unauthorized request from IP: ${ip}`);
-    }
+    bcrypt.compare(apiKey, process.env.API_KEY).then(function(result) {
+        if(result){
+            next();
+        }else{
+            res.sendStatus(401);
+            console.log(`Unauthorized request from IP: ${ip}`);
+        }
+    });
 }
 
 module.exports = auth;
