@@ -34,23 +34,13 @@ app.use(express.json());
 app.use(morgan('dev'));
 app.use(limiter);
 
-app.get('/robots.txt', (req, res) => {
-
-    // set 'Connection' header to 'Close'
-    res.setHeader('Connection', 'close');
-
-    res.type('text/plain');
-    res.send("User-agent: *\nDisallow: /\nX-Robots-Tag: noindex, nofollow");
-});
+app.use(express.static('public'));
 
 app.use(auth);
 
 app.use('/api', timerRouter);
 app.use('/api', logRouter);
 app.use('/api', statusRouter);
-
-// use auth after robots.txt so it doesnt need authentication
-
 
 app.get('/getTemp', (req, res) =>{
     // set 'Connection' header to 'Close'
