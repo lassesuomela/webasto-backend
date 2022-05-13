@@ -12,11 +12,12 @@ const auth = (req, res, next) => {
     let ipData = geoIp.lookup(ip);
 
     if(ipData === null){
+        console.log(`No GEO IP data found from IP: ${ip}`);
         return res.sendStatus(403);
     }
 
     if(ipData.country !== 'FI') {
-        console.log(`Wrong country: ${country}`);
+        console.log(`Wrong country: ${ipData.country}`);
         console.log(`From IP: ${ip}`);
         return res.sendStatus(403);
     }
