@@ -13,6 +13,7 @@ const timerRouter = require('./routes/timerRoutes');
 const logRouter = require('./routes/logRoutes');
 const statusRouter = require('./routes/statusRoutes');
 const tempRouter = require('./routes/tempRoutes');
+const voltageRouter = require('./routes/voltageRoutes');
 
 const port = process.env.DOCKER_APP_PORT || 80;
 
@@ -43,111 +44,7 @@ app.use('/api', timerRouter);
 app.use('/api', logRouter);
 app.use('/api', statusRouter);
 app.use('/api', tempRouter);
-
-app.get('/getVoltage', (req, res) =>{
-
-    // set 'Connection' header to 'Close'
-    res.setHeader('Connection', 'close');
-
-    console.log(req.path);
-    let ip = req.header('x-forwarded-for') || req.socket.remoteAddress;
-
-    let ua = req.get('user-agent');
-    console.log(ua);
-    let {api_key} = req.query;
-    console.log(req.query);
-
-    if(api_key == process.env.API_KEY){
-        console.log(`Authorized access from IP: '${ip}'`);
-        // if one of the variables are undefined then send 400 status code to the client
-        if(api_key == undefined){
-            return res.sendStatus(400).send({message:"One or more variables are undefined"});
-        }
-        
-        sql_query = "SELECT * FROM voltageData";
-
-        sql_query = mysql.format(sql_query);
-        
-        // attempt to query mysql server with the sql_query 
-        pool.query(sql_query, (error, result) =>{
-            if (error){
-                // on error log the error to console and send 500 status code to client
-                console.log(error);
-                return res.sendStatus(500);
-            };
-            
-            // if we found the card we send 200 status code
-        
-            if(result.length > 0){
-                let currentVoltage = result[0].voltage;
-                console.log(`Voltage : ${currentVoltage}`);
-                return res.status(200).send({voltage:currentVoltage});
-            }else{
-                // status not found
-                console.log('Voltage not found');
-                return res.status(500).send({error:"Voltage not found"});
-            }
-        });
-
-    }else{
-      // if client sends invalid api key then send 401 status code to the client
-  
-      console.log(`Unauthorized access using API key '${api_key}' from IP: '${ip}'`);
-      return res.sendStatus(401);
-    }
-})
-
-app.post('/updateVoltage', (req, res) =>{
-
-    // set 'Connection' header to 'Close'
-    res.setHeader('Connection', 'close');
-
-    console.log(req.path);
-    // get ip address
-    let ip = req.header('x-forwarded-for') || req.socket.remoteAddress;
-  
-    let ua = req.get('user-agent');
-    console.log(ua);
-    
-    // get variables from query
-    const {api_key, voltage} = req.body;
-
-    let sql_query = "";
-  
-    // check if client provided api key matches with the servers api key
-    if(api_key == process.env.API_KEY){
-        // if voltage is undefined then send 400 status code to client client
-        if(voltage == undefined){
-            return res.sendStatus(400);
-        }
-    
-        console.log(req.body);
-    
-        sql_query = "UPDATE voltageData SET voltage = ? WHERE id = 1";
-        let inserts = [voltage];
-    
-        // insert variables into the sql_query string
-        sql_query = mysql.format(sql_query, inserts);
-    
-        // attempt to query mysql server with the sql_query 
-        pool.query(sql_query, (error, result) =>{
-            if (error){
-                // on error log the error to console and send 500 status code to client
-                console.log(error.code);
-                return res.sendStatus(500);
-            };
-            // on success send client success code
-            // console.log(sql_query);
-            console.log("Voltage data stored");
-            res.sendStatus(201);
-        });
-      
-    }else{
-      // if client sends invalid api key then send 401 status code to the client
-      res.sendStatus(401);
-      console.log(`Unauthorized access using API key '${api_key}' from IP ${ip}.`);
-    }
-});
+app.use('/api', voltageRouter);
 
 // start the server
 app.listen(port, () => {
