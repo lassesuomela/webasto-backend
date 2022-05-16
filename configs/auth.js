@@ -22,13 +22,8 @@ const auth = (req, res, next) => {
         return res.sendStatus(403);
     }
 
-    let apiKey;
-
-    if(req.query.apiKey === undefined) {
-        apiKey = req.body.apiKey;
-    }else{
-        apiKey = req.query.apiKey;
-    }
+    // get the apikey from the authorization header
+    let apiKey = req.headers['authorization'];
 
     // if one of the variables are undefined then send 400 status code to the client
     if(apiKey === undefined){
@@ -36,7 +31,8 @@ const auth = (req, res, next) => {
         return res.sendStatus(400);
     }
 
-    bcrypt.compare(apiKey, process.env.API_KEY).then(function(result) {
+    // remove 'bearer' word from apikey and compare it to the .env api key
+    bcrypt.compare(apiKey.split(' ')[1], process.env.API_KEY).then(function(result) {
         if(result){
             next();
         }else{
