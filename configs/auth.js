@@ -12,7 +12,7 @@ const auth = (req, res, next) => {
     let ipData = geoIp.lookup(ip);
 
     if(ipData === null){
-        console.log(`No GEO IP data found from IP: ${ip}`);
+        console.log(`No GEO IP data found for IP: ${ip}`);
         return res.sendStatus(403);
     }
 

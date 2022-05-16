@@ -8,7 +8,6 @@ const getStatus = (req, res) =>{
         return res.sendStatus(400);
     }
     
-    // attempt to query mysql server with the sql_query 
     status.getById(id, (error, result) =>{
         
         if (error){
@@ -17,8 +16,6 @@ const getStatus = (req, res) =>{
             return res.sendStatus(500);
         }
         
-        // if we found the card we send 200 status code
-    
         if(result.length > 0){
             let currentStatus = result[0].status;
             let onTime = result[0].onTime;

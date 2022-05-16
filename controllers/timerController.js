@@ -9,7 +9,6 @@ const getCurrentDaysTimer = (req, res) => {
         return res.json({status: "error", error:"Out of scope"});
     }
 
-    // attempt to query mysql server with the sql_query 
     timer.getById(currentDay, (error, result) =>{
         if (error){
             // on error log the error to console and send 500 status code to client

@@ -28,7 +28,6 @@ const updateLogs = (req, res) => {
 
 const fetchLastLog = (req, res) => {
 
-    // attempt to query mysql server with the sql_query 
     logs.getLastLog((error, result) =>{
         if (error){
             // on error log the error to console and send 500 status code to client
@@ -36,8 +35,6 @@ const fetchLastLog = (req, res) => {
             return res.sendStatus(500);
         }
         
-        // if we found the card we send 200 status code
-    
         if(result.length > 0){
             let startTime = result[0].startTime;
             let endTime = result[0].endTime;

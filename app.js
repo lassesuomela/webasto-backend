@@ -12,6 +12,7 @@ const morgan = require("morgan");
 const timerRouter = require('./routes/timerRoutes');
 const logRouter = require('./routes/logRoutes');
 const statusRouter = require('./routes/statusRoutes');
+const tempRouter = require('./routes/tempRoutes');
 
 const port = process.env.DOCKER_APP_PORT || 80;
 
@@ -41,115 +42,7 @@ app.use(auth);
 app.use('/api', timerRouter);
 app.use('/api', logRouter);
 app.use('/api', statusRouter);
-
-app.get('/getTemp', (req, res) =>{
-    // set 'Connection' header to 'Close'
-    res.setHeader('Connection', 'close');
-
-    console.log(req.path);
-    let ip = req.header('x-forwarded-for') || req.socket.remoteAddress;
-
-    let ua = req.get('user-agent');
-    console.log(ua);
-
-    let {api_key} = req.query;
-    console.log(req.query);
-
-    if(api_key == process.env.API_KEY){
-        console.log(`Authorized access from IP: '${ip}'`);
-        // if one of the variables are undefined then send 400 status code to the client
-        if(api_key == undefined){
-            return res.sendStatus(400).send({message:"One or more variables are undefined"});
-        }
-        
-        sql_query = "SELECT * FROM tempData ORDER BY id DESC LIMIT 1";
-
-        sql_query = mysql.format(sql_query);
-        
-        // attempt to query mysql server with the sql_query 
-        pool.query(sql_query, (error, result) =>{
-            if (error){
-                // on error log the error to console and send 500 status code to client
-                console.log(error);
-                return res.sendStatus(500);
-            };
-            
-            // if we found the card we send 200 status code
-        
-            if(result.length > 0){
-                let currentTemp = result[0].currentTemp;
-                let currentHum = result[0].humidity;
-                console.log(`Temp: ${currentTemp}`);
-                return res.status(200).send({
-                    "temperature":currentTemp,
-                    "humidity":currentHum
-                });
-
-            }else{
-                // status not found
-                console.log('Temperature not found');
-                return res.status(500).send({error:"Temperature not found"});
-            }
-        });
-
-    }else{
-      // if client sends invalid api key then send 401 status code to the client
-  
-      console.log(`Unauthorized access using API key '${api_key}' from IP: '${ip}'`);
-      return res.sendStatus(401);
-    }
-})
-
-app.post('/updateTemp', (req, res) =>{
-
-    // set 'Connection' header to 'Close'
-    res.setHeader('Connection', 'close');
-
-    console.log(req.path);
-    // get ip address
-    let ip = req.header('x-forwarded-for') || req.socket.remoteAddress;
-  
-    // get variables from query
-    const {api_key, temp, hum} = req.body;
-    let sql_query = "";
-
-    var ua = req.get('user-agent');
-    console.log(ua);
-  
-    // check if client provided api key matches with the servers api key
-    if(api_key == process.env.API_KEY){
-        // if temp is undefined then send 400 status code to client client
-        if(temp == undefined || hum == undefined){
-            return res.sendStatus(400);
-        }
-    
-        console.log(req.body);
-    
-        sql_query = "INSERT INTO tempData (currentTemp, humidity) VALUES (?, ?)";
-        let inserts = [temp, hum];
-    
-        // insert variables into the sql_query string
-        sql_query = mysql.format(sql_query, inserts);
-    
-        // attempt to query mysql server with the sql_query 
-        pool.query(sql_query, (error, result) =>{
-            if (error){
-            // on error log the error to console and send 500 status code to client
-            console.log(error.code);
-            return res.sendStatus(500);
-            };
-            // on success send client success code
-            // console.log(sql_query);
-            console.log("Temperature and humidity data stored");
-            res.sendStatus(201);
-        });
-      
-    }else{
-      // if client sends invalid api key then send 401 status code to the client
-      res.sendStatus(401);
-      console.log(`Unauthorized access using API key '${api_key}' from IP ${ip}.`);
-    }
-});
+app.use('/api', tempRouter);
 
 app.get('/getVoltage', (req, res) =>{
 
