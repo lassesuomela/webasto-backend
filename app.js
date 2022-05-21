@@ -47,7 +47,7 @@ app.use('/api', tempRouter);
 app.use('/api', voltageRouter);
 
 // start the server
-app.listen(port, () => {
+app.listen(port, "0.0.0.0", () => {
     console.log(`Listening at http://localhost:${port}`);
 });
 

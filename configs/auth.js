@@ -1,7 +1,5 @@
 require('dotenv').config()
 
-const express = require('express');
-const app = express();
 const bcrypt = require('bcrypt');
 const geoIp = require('geoip-lite');
 
@@ -23,10 +21,11 @@ const auth = (req, res, next) => {
     }
 
     // get the apikey from the authorization header
-    let apiKey = req.headers['authorization'];
+    let apiKey = req.headers.authorization;
 
     // if one of the variables are undefined then send 400 status code to the client
-    if(apiKey === undefined){
+    if(apiKey === undefined || apiKey.split(' ')[1] === undefined){
+        console.log(apiKey);
         console.log(`Unauthorized request from IP: ${ip}`);
         return res.sendStatus(400);
     }
