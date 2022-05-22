@@ -1,4 +1,4 @@
-let mysql = require('mysql');
+let mysql = require('mysql2');
 require('dotenv').config()
 
 const pool = mysql.createPool({
@@ -7,7 +7,7 @@ const pool = mysql.createPool({
     user: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
-    timezone: 'Europe/Helsinki'
+    timezone: '+03:00'
 })
 
 module.exports = pool;
