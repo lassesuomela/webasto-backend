@@ -45,7 +45,7 @@ const modifyStatus = (req, res) =>{
     let id = req.params.id;
     
     // if one of the variables are undefined then send 400 status code to the client
-    if(newStatus === undefined){
+    if(newStatus === undefined || onTime === undefined || pulseSent === undefined || rssi === undefined){
         return res.sendStatus(400);
     }
 
