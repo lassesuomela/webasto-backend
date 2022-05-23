@@ -54,7 +54,7 @@ const modifyStatus = (req, res) =>{
     }
 
     let data = {
-        "newStatus": newStatus, "onTime":onTime, "pulseSent":pulseSent, "rssi":rssi
+        "newStatus": newStatus, "onTime":onTime, "pulseSent":pulseSent, "rssi":rssi, "id":id
     }
     
     // attempt to query mysql server with the sql_query 
