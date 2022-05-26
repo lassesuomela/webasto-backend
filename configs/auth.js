@@ -14,19 +14,18 @@ const auth = (req, res, next) => {
         return res.sendStatus(403);
     }
 
-    if(ipData.country !== 'FI') {
-        console.log(`Wrong country: ${ipData.country}`);
-        console.log(`From IP: ${ip}`);
-        return res.sendStatus(403);
-    }
-
     // get the apikey from the authorization header
     let apiKey = req.headers.authorization;
 
+    if(ipData.country !== 'FI') {
+        console.log(`Wrong country: ${ipData.country}\nFrom IP: ${ip}`);
+        console.log('Using API key = ' + apiKey);
+        return res.sendStatus(403);
+    }
+
     // if one of the variables are undefined then send 400 status code to the client
     if(apiKey === undefined || apiKey.split(' ')[1] === undefined){
-        console.log(apiKey);
-        console.log(`Unauthorized request from IP: ${ip}`);
+        console.log(`API key not found. Unauthorized request from IP: ${ip}`);
         return res.sendStatus(400);
     }
 
