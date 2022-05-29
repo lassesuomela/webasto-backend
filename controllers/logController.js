@@ -36,6 +36,7 @@ const fetchLastLog = (req, res) => {
         }
         
         if(result.length > 0){
+            
             let startTime = result[0].startTime;
             let endTime = result[0].endTime;
             let onTime = result[0].onTime;
