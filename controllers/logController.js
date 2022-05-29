@@ -39,11 +39,13 @@ const fetchLastLog = (req, res) => {
             let startTime = result[0].startTime;
             let endTime = result[0].endTime;
             let onTime = result[0].onTime;
+            let timestamp = result[0].timestamp;
 
             let payload = {
                 "startTime":startTime,
                 "endTime":endTime,
-                "onTime":onTime
+                "onTime":onTime,
+                "timestamp":timestamp
             };
             
             return res.json({status:"success", data:payload});
