@@ -1,27 +1,44 @@
 **Things needed to get this API running**
 
-You need certifacate if you want ssl to work with Nginx. You can get free SSL certificate from [Cloudflare](https://www.cloudflare.com/). Even though its not needed for this API to work it is recommended to use HTTPS. You need SQL server and you need to store those credentials in .env file. Also you need to create an API_KEY that will be compared against clients key. Also there are docker files for you to get to work in docker container. Also you need a server to host this. I found mine on [LowEndTalk](https://lowendtalk.com/).
+These steps are required to do:
+1. Run `npm install` to install dependencies
+2. Hash a secret key with bcrypt
+3. MySQL server with webasto database provided in the sql file
+4. Create and edit **.env** file
+5. Run `npm start`
+
+These are optional steps but required if you want to use nginx:
+1. Configure reverse_proxy/nginx.conf with paths to SSL certificates and server_name
+2. Configure docker-compose.yml with paths to SSL certificates 
+3. Change config/auth.js files line `ipData.country !== 'FI'` from 'FI' to your country code or comment the whole if statement if you are running this locally. (Because it will not find a country code with local ip address and it will return 403 status code.)
+4. If nginx is properly configurated you can run `./build.sh` and `./restart.sh` to build a docker image and run it
+   
+---
+
+## Add **.env** file to the root folder
+
+These need to be added with your own credentials:
+
+```
+DB_HOST=localhost
+DB_USERNAME=root
+DB_PASSWORD=root
+DB_DATABASE=webasto
+
+API_KEY=some_bcrypt_hashed_secret
+```
+To hash your secret type these to the terminal:
+```
+node
+const bcrypt = require('bcrypt');
+bcrypt.hash('secret', 10, (err, hash) => {console.log(hash)});
+```
 
 ---
 
-## Edit .env file
+## Edit reverse_proxy/nginx.conf file
+And change these to match your configuration if you want to use nginx as a reverse proxy. There is no need to change these if you want to run only the Node.js backend.
 
-These need to be edited:
-
-```
-DB_HOST=IPADDRESS
-DB_USERNAME=USERNAME
-DB_PASSWORD=PASSWORD
-DB_DATABASE=DATABASE
-
-API_KEY=SECRET_API_KEY
-```
-
----
-
-## Edit nginx.conf file in reverse_proxy folder
-
-Also these:
 ```
 ssl_certificate
 ssl_certificate_key
@@ -30,37 +47,35 @@ server_name
 ```
 ---
 
-## Here you can get your SSL certificates from Cloudflare
-![SSL_1](/images/ssl_1.png)
-![SSL_2](/images/ssl_2.png)
-## Endpoints (GET and POST)
+## Endpoints
 
-All of these enpoints require an *api_key*. Except /robots.txt because it is intended for crawling bots like the one that Google uses.
+All of these enpoints require an **API key** in the Authorization header of the request. Except `/robots.txt`.
 
 These are the **GET** endpoints:
+
 ```
 /robots.txt
-/getTimers
-/getStatus/:id
-/getLocation
-/getTemp
-/getVoltage
-/refreshLogs
+
+/api/timers
+/api/status/:id
+/api/temp
+/api/voltage
+/api/logs
 ```
 And these are the **POST** endpoints:
 ```
-/updateTimers
-/updateStatus/:id
-/updateLocation
-/updateTemp
-/updateVoltage
-/updateLogs
+/api/timers
+/api/status/:id
+/api/temp
+/api/voltage
+/api/logs
 ```
 ---
 ## Usage
 
-GET example request: http://sub.domain.tld/getTimers?api_key=secret_api_key.
-This will return formatted JSON like this:
+Bearer Authorization token needs to be set in every request. 
+GET example request: http://localhost:8080/api/timers.
+This will return JSON object with these key value pairs:
 ```
 {
 	"time": "06:59:00",
@@ -70,24 +85,24 @@ This will return formatted JSON like this:
 	"onTime": 10
 }
 ```
-![get_timers](images/get_timers.png)
+Another example to http://localhost:8080/api/logs
+```
+{
+	"status": "success",
+	"data": {
+		"startTime": "02:27:00",
+		"endTime": "02:37:00",
+		"onTime": 10,
+		"timestamp": "2022-05-30T02:27:32.000Z"
+	}
+}
+```
 
-POST example request: http://sub.domain.tld/updateVoltage
+POST example request: http://localhost:8080/api/voltage.
 and in the request body:
 
 ```
 {
-	"api_key":"secret_api_key",
 	"voltage":"0"
 }
-```
-![post_voltage](/images/post_voltage.png)
-
-## Status codes
-
-```
-200 OK - if the request was successful
-201 Created - if the request was successful and data was added to the database
-400 Bad request - if one or more of the required arguments are missing
-401 Unauthorized - if the api_key doesn't match servers key 
 ```

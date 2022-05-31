@@ -15,7 +15,7 @@ const statusRouter = require('./routes/statusRoutes');
 const tempRouter = require('./routes/tempRoutes');
 const voltageRouter = require('./routes/voltageRoutes');
 
-const port = process.env.DOCKER_APP_PORT || 80;
+const port = process.env.DOCKER_APP_PORT || 8080;
 
 const limiter = rateLimit({
     windowMs: 60 * 1000 * 15, // 15 minutes
