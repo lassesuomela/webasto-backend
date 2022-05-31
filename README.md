@@ -1,5 +1,9 @@
 **Things needed to get this API running**
 
+Notes:
+ - Nginx is configured to only allow request from cloudflares ip addresses.
+ - ./cloudflare.sh adds exception for cloudflares ip addresses to http and https ports
+
 These steps are required to do:
 1. Run `npm install` to install dependencies
 2. Hash a secret key with bcrypt
@@ -45,6 +49,23 @@ ssl_certificate_key
 
 server_name
 ```
+---
+
+## Edit docker-compose.yml file
+
+Private key and public key paths need to match your configuration. And if you need to change docker containers ports, you can do that here. But then `reverse_proxy/nginx.conf` proxy_pass need to reconfigured.
+```
+volumes:
+      - ./reverse_proxy/nginx.conf:/etc/nginx/nginx.conf
+      - /root/webasto-backend/public_key.pem:/root/webasto-backend/public_key.pem
+      - /root/webasto-backend/private_key.key:/root/webasto-backend/private_key.key
+	  
+...
+
+environment:
+      - DOCKER_APP_PORT=8080
+```
+
 ---
 
 ## Endpoints
