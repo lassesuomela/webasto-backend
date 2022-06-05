@@ -14,6 +14,7 @@ const logRouter = require('./routes/logRoutes');
 const statusRouter = require('./routes/statusRoutes');
 const tempRouter = require('./routes/tempRoutes');
 const voltageRouter = require('./routes/voltageRoutes');
+const otaRoutes = require('./routes/otaRoutes');
 
 const port = process.env.DOCKER_APP_PORT || 8080;
 
@@ -45,6 +46,7 @@ app.use('/api', logRouter);
 app.use('/api', statusRouter);
 app.use('/api', tempRouter);
 app.use('/api', voltageRouter);
+app.use('/ota', otaRoutes);
 
 // start the server
 app.listen(port, "0.0.0.0", () => {
