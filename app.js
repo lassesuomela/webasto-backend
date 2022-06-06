@@ -41,6 +41,8 @@ app.use(express.static('public'));
 
 app.use(auth);
 
+app.use(express.static('ota/binaries'));
+
 app.use('/api', timerRouter);
 app.use('/api', logRouter);
 app.use('/api', statusRouter);

@@ -2,33 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
 
-const downloadFile = (req, res) => {
-    
-    res.setHeader('Connection', 'Close');
-
-    fs.readdir('./ota', (err, files) => {
-
-        let fileName;
-
-        if(err){
-            console.log(err);
-        }
-
-        files.forEach(file => {
-            if(path.extname(file) === '.bin'){
-                fileName = file;
-            }
-        })
-
-        if(fileName !== undefined){
-            return res.download('./ota/' + fileName);
-        }else{
-            res.status(500).end();
-        }
-    })
-}
-
-const storage = multer.diskStorage({
+const storages = multer.diskStorage({
 
     destination: 'ota/',
     filename: function (req, file, cb) {
@@ -47,7 +21,7 @@ const storage = multer.diskStorage({
 
 const upload = multer(
     {
-        storage: storage,
+        storage: storages,
         limits: {
             // 1MB file size limit
             fileSize: 1024 * 1024 * 1
@@ -85,6 +59,15 @@ const uploadFile = (req, res) => {
             return res.json({status:"error", message:err});
         }
 
+        if(req.file.mimetype === 'application/octet-stream'){
+            fs.rename('./ota/' + req.file.filename, './ota/binaries/' + req.file.filename, (err) => {
+                if(err){
+                    console.log(err);
+                    return res.status(500).end();
+                }
+            });
+        }
+        
         res.status(200).end();
     })
 }
@@ -100,16 +83,39 @@ const getVersion = (req, res) => {
     if(stats.size > 10) {
         return res.send({status:"error", message:"File size too large"});
     }
-    fs.readFile('./ota/version.txt', (err, value) => {
+
+    fs.readFile('./ota/version.txt', (err, versionValue) => {
 
         if(err) return res.status(500).end();
-        
-        res.json({status:"success",version:value.toString()});
+
+        fs.readdir('./ota/binaries', (err, files) => {
+
+            let fileName;
+    
+            if(err){
+                console.log(err);
+            }
+    
+            files.forEach(file => {
+                if(path.extname(file) === '.bin'){
+                    fileName = file;
+                }
+            })
+    
+            if(typeof fileName !== "undefined"){
+                res.json({
+                    status:"success",
+                    version:versionValue.toString(),
+                    link:"https://webasto.saunagaming.com/" + fileName
+                });
+            }else{
+                res.status(500).end();
+            }
+        })
     })
 }
 
 module.exports = {
-    downloadFile,
     uploadFile,
     getVersion
 }
