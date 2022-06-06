@@ -113,6 +113,7 @@ const getVersion = (req, res) => {
                     status:"error",
                     message:"Binary file was not found"
                 });
+                
             }
         })
     })
