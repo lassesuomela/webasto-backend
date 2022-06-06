@@ -5,6 +5,8 @@ const geoIp = require('geoip-lite');
 
 const auth = (req, res, next) => {
 
+    console.log(req.header);
+
     let ip = (req.header('x-forwarded-for') || req.socket.remoteAddress).split(', ')[0];
 
     let ipData = geoIp.lookup(ip);
