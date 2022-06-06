@@ -16,7 +16,7 @@ const auth = (req, res, next) => {
 
     // get the apikey from the authorization header
     let apiKey = req.headers.authorization;
-
+    
     if(ipData.country !== 'FI') {
         console.log(`Wrong country: ${ipData.country}\nFrom IP: ${ip}`);
         console.log('Using API key = ' + apiKey);
