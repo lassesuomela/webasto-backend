@@ -109,7 +109,10 @@ const getVersion = (req, res) => {
                     link:"https://webasto.saunagaming.com/" + fileName
                 });
             }else{
-                res.status(500).end();
+                res.json({
+                    status:"error",
+                    message:"Binary file was not found"
+                });
             }
         })
     })
