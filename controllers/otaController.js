@@ -91,6 +91,10 @@ const uploadFile = (req, res) => {
 
 const getVersion = (req, res) => {
 
+    if(!fs.existsSync('./ota/version.txt')){
+        return res.json({status:"error", message:"File not found"});
+    }
+
     let stats = fs.statSync('./ota/version.txt');
 
     if(stats.size > 10) {
