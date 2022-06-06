@@ -105,7 +105,7 @@ const getVersion = (req, res) => {
             if(typeof fileName !== "undefined"){
                 res.json({
                     status:"success",
-                    version:versionValue.toString(),
+                    version:parseFloat(versionValue.toString()),
                     link:"https://webasto.saunagaming.com/" + fileName
                 });
             }else{
