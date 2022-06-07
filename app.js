@@ -38,9 +38,10 @@ app.use(morgan('dev'));
 app.use(limiter);
 
 app.use(express.static('public'));
-app.use(express.static('ota/binaries'));
 
 app.use(auth);
+
+app.use(express.static('ota/binaries'));
 
 app.use('/api', timerRouter);
 app.use('/api', logRouter);
