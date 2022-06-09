@@ -42,7 +42,7 @@ const updateTemperature = (req, res) => {
             return res.sendStatus(500);
         }
 
-        console.log("Temperature and humidity data stored");
+        // console.log("Temperature and humidity data stored");
         res.sendStatus(201);
     });
 }
