@@ -4,6 +4,7 @@ const express = require('express');
 
 const db = require('./configs/db');
 const auth = require('./configs/auth');
+const cors = require('cors');
 
 const rateLimit = require('express-rate-limit');
 const helmet = require("helmet");
@@ -29,6 +30,9 @@ const limiter = rateLimit({
 });
 
 let app = express();
+
+app.use(cors());
+app.options('*', cors());
 
 app.set('trust proxy', '127.0.0.1');
 
