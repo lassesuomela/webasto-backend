@@ -21,7 +21,6 @@ const updateLogs = (req, res) => {
         }
 
         // on success send client success code
-        console.log("Logs created");
         res.sendStatus(201);
     });
 }
@@ -52,7 +51,6 @@ const fetchLastLog = (req, res) => {
             return res.json({status:"success", data:payload});
         }else{
             // status not found
-            console.log('Logs not found');
             return res.json({status:"error",error:"Logs not found"});
         }
     });

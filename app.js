@@ -16,8 +16,9 @@ const statusRouter = require('./routes/statusRoutes');
 const tempRouter = require('./routes/tempRoutes');
 const voltageRouter = require('./routes/voltageRoutes');
 const otaRoutes = require('./routes/otaRoutes');
+const loginRoutes = require('./routes/loginRoutes');
 
-const port = process.env.DOCKER_APP_PORT || 8080;
+const port = process.env.DOCKER_APP_PORT || 8081;
 
 const limiter = rateLimit({
     windowMs: 60 * 1000 * 15, // 15 minutes
@@ -42,6 +43,8 @@ app.use(morgan('dev'));
 app.use(limiter);
 
 app.use(express.static('public'));
+
+app.use('/api', loginRoutes);
 
 app.use(auth);
 
