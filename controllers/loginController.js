@@ -5,12 +5,13 @@ const jwt = require('../configs/jwt');
 const loginModel = require('../models/loginModel');
 
 const login = (req, res) => {
+
     let username = req.body.username;
     let password = req.body.password;
 
     // check that the username and password exists
     if(!username || !password){
-        return res.json({status:'error', message:'Incomplete body'})
+        return res.json({status:'error', message:'Please fill all fields.'})
     }
 
     loginModel.getByUsername(username, (err, result) => {

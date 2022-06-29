@@ -14,22 +14,21 @@ const auth = (req, res, next) => {
     let ip = (req.header('x-forwarded-for') || req.socket.remoteAddress).split(', ')[0];
 
     let ipData = geoIp.lookup(ip);
-
-    /*
+    
     if(ipData === null){
         console.log(`No GEO IP data found for IP: ${ip}`);
         return res.sendStatus(403);
     }
-*/
+
     // get the apikey from the authorization header
     let apiKey = req.headers.authorization;
     
-    /*
+    
     if(ipData.country !== 'FI') {
         console.log(`Wrong country: ${ipData.country}\nFrom IP: ${ip}`);
         console.log('Using API key = ' + apiKey);
         return res.sendStatus(403);
-    }*/
+    }
 
     // if one of the variables are undefined then send 400 status code to the client
     if(apiKey === undefined || apiKey.split(' ')[1] === undefined){
