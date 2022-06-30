@@ -57,7 +57,6 @@ const modifyTimers = (req, res) => {
 
         let tmr = {"time":time, "time2":time2, "enabled":enabled, "enabled2":enabled2, "onTime":onTime, "id":i};
 
-        console.log(tmr);
         // attempt to query mysql server with the sql_query 
         timer.updateAll(tmr, (error, result) =>{
             if (error){

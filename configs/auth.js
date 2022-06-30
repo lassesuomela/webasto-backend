@@ -5,6 +5,8 @@ const geoIp = require('geoip-lite');
 
 const jwt = require('./jwt');
 
+const apikeyModel = require('../models/apikeyModel');
+
 const auth = (req, res, next) => {
 
     if(process.env.ENV === 'dev') {
@@ -43,15 +45,20 @@ const auth = (req, res, next) => {
     // remove 'bearer' word from apikey and compare it to the .env api key
     let token = apiKey.split(' ')[1];
 
-    bcrypt.compare(token, process.env.API_KEY).then(function(result) {
+    apikeyModel.getByApikey(token, (error, result) => {
 
-        // check if token matches to apikey
-        if(result){
+        if(error) {
+            console.log(error);
+        }
+
+        // found match for the apikey in the db
+        if(result.length > 0){
+
             next();
         }else{
-            // if it doesnt mathc apikey then try to match to jwt token
+            // if it doesnt match apikey then try to match to jwt token
             jwt.verifyToken(token, (error, result) => {
-                
+
                 // if token matches then go forwards
                 if(result) {
                     next();
@@ -62,7 +69,7 @@ const auth = (req, res, next) => {
                 }
             });
         }
-    });
+    })
 };
 
 module.exports = auth;
