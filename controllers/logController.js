@@ -56,7 +56,55 @@ const fetchLastLog = (req, res) => {
     });
 }
 
+const fetchNLog = (req, res) => {
+
+    if(!req.params.page){
+        return res.json({status:"error",message:"Please fill all fields."});
+    }
+
+    // how many logs per page we want to show in the exe
+    let perPageCount = 10; 
+    let maxLogCount = 0;
+    let currentPage = 0;
+    let maxPage = 0;
+
+    logs.getLogCount((error, result) => {
+        if(error) {
+            console.log(error);
+            return res.sendStatus(500);
+        }
+
+        if(result.length === 0) {
+            res.json({status:"error",message:"No logs found."});
+        }
+
+        maxLogCount = result[0].count;
+
+        maxPage = Math.ceil(maxLogCount/perPageCount); 
+
+        if(req.params.page <= 0 || req.params.page > maxPage){
+            return res.json({status:"error",message:"Page number out of scope"});
+        }
+
+        currentPage = (req.params.page - 1) * perPageCount;
+                
+        logs.getNAmountOfLogs(currentPage, (error, result) =>{
+            if(error){
+                return res.json(err);
+            }
+
+            if(result.length > 0){
+                res.json({status:"success", maxPageAmount: maxPage, data:result});
+            }else{
+                res.json({status:"error",message:"No logs found."});
+            }
+        })
+
+    })
+}
+
 module.exports = {
     updateLogs,
-    fetchLastLog
+    fetchLastLog,
+    fetchNLog
 }
