@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS `webasto`.`logs` (
   `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 75
+AUTO_INCREMENT = 93
 DEFAULT CHARACTER SET = utf8mb4;
 
 
@@ -91,7 +91,21 @@ CREATE TABLE IF NOT EXISTS `webasto`.`timers` (
   `onTime` TINYINT(3) UNSIGNED NOT NULL DEFAULT '30',
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 6
+AUTO_INCREMENT = 11
+DEFAULT CHARACTER SET = utf8mb4;
+
+
+-- -----------------------------------------------------
+-- Table `webasto`.`users`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `webasto`.`users` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `username` VARCHAR(30) NULL DEFAULT NULL,
+  `password` VARCHAR(60) NULL DEFAULT NULL,
+  `apikey` VARCHAR(255) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 3
 DEFAULT CHARACTER SET = utf8mb4;
 
 
@@ -108,13 +122,12 @@ DEFAULT CHARACTER SET = utf8mb4;
 
 
 -- -----------------------------------------------------
--- Table `webasto`.`users`
+-- Table `webasto`.`uptime`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `webasto`.`users` (
+CREATE TABLE IF NOT EXISTS `webasto`.`uptime` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `username` VARCHAR(30) NULL,
-  `password` VARCHAR(60) NULL,
-  `apikey` VARCHAR(255) NULL,
+  `uptime` FLOAT NOT NULL,
+  `date` VARCHAR(30) NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 2

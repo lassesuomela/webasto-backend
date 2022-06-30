@@ -46,6 +46,7 @@ const getCurrentDaysTimer = (req, res) => {
 const modifyTimers = (req, res) => {
 
     let time, time2, enabled, enabled2, onTime;
+
     for(let i = 1; i < 6; i++){
         
         time = req.body[i]['time'];
@@ -55,6 +56,8 @@ const modifyTimers = (req, res) => {
         onTime = req.body[i]['onTime'];
 
         let tmr = {"time":time, "time2":time2, "enabled":enabled, "enabled2":enabled2, "onTime":onTime, "id":i};
+
+        console.log(tmr);
         // attempt to query mysql server with the sql_query 
         timer.updateAll(tmr, (error, result) =>{
             if (error){
@@ -68,7 +71,26 @@ const modifyTimers = (req, res) => {
     return res.sendStatus(200);
 }
 
+const displayAllTimers = (req, res) => {
+    timer.getAll((error, data) => {
+
+        console.log(error);
+        console.log(data);
+
+        if(error){
+            console.log(error);
+            return res.sendStatus(500);
+        }
+
+        console.log(data);
+        if(data.length > 0){
+            res.json(data);
+        }
+    })
+}
+
 module.exports = {
     getCurrentDaysTimer,
-    modifyTimers
+    modifyTimers,
+    displayAllTimers
 }

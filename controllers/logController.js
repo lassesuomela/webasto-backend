@@ -90,7 +90,7 @@ const fetchNLog = (req, res) => {
                 
         logs.getNAmountOfLogs(currentPage, (error, result) =>{
             if(error){
-                return res.json(err);
+                return res.json(error);
             }
 
             if(result.length > 0){
