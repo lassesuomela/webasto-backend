@@ -37,8 +37,7 @@ const getCurrentDaysTimer = (req, res) => {
             return res.json(jsonData);
         }else{
             // status not found
-            console.log('Status not set');
-            return res.status(500).send({status:"error", error:"Status not set"});
+            return res.status(500).send({status:"error", error:"Timers not found"});
         }
     });
 }
@@ -59,6 +58,7 @@ const modifyTimers = (req, res) => {
 
         // attempt to query mysql server with the sql_query 
         timer.updateAll(tmr, (error, result) =>{
+
             if (error){
                 // on error log the error to console and send 500 status code to client
                 console.log(error);
