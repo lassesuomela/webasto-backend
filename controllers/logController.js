@@ -78,7 +78,7 @@ const fetchNLog = (req, res) => {
             res.json({status:"error",message:"No logs found."});
         }
 
-        maxLogCount = result[0].count;
+        maxLogCount = result[0].maxCount;
 
         maxPage = Math.ceil(maxLogCount/perPageCount); 
 
