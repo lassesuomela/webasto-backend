@@ -11,6 +11,7 @@ const auth = (req, res, next) => {
 
     if(process.env.ENV === 'dev') {
         console.log(req.headers);
+        console.log(req.body);
     }
 
     let ip = (req.header('x-forwarded-for') || req.socket.remoteAddress).split(', ')[0];

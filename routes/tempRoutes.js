@@ -5,6 +5,8 @@ let tempController = require('../controllers/tempController');
 
 router.get('/temp', tempController.getTemperature);
 
-router.post('/temp', tempController.updateTemperature);
+router.get('/temp/hour', tempController.getLastHour);
+
+router.post('/temp', tempController.addTemperature);
 
 module.exports = router;

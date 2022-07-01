@@ -27,7 +27,43 @@ const getTemperature = (req, res) => {
     });
 }
 
-const updateTemperature = (req, res) => {
+const getLastHour = (req, res) => {
+
+    tempModel.getLastHour((error, result) =>{
+        if (error){
+            // on error log the error to console and send 500 status code to client
+            console.log(error);
+            return res.sendStatus(500);
+        }
+        
+        if(result.length > 0){
+
+            let temp = [];
+            let humi = [];
+            let timestamps = [];
+
+            for (let i = 0; i < result.length; i++){
+                temp.push(result[i].temperature);
+                humi.push(result[i].humidity);
+                timestamps.push(result[i].timestamp);
+            }
+
+            return res.json({
+                status:"success",
+                temperatures:temp,
+                humiditys:humi,
+                timestamps:timestamps
+            });
+
+        }else{
+            // status not found
+            console.log('Temperature not found');
+            return res.status(500).send({status:"error",error:"Temperature not found"});
+        }
+    });
+}
+
+const addTemperature = (req, res) => {
     const {temp, hum} = req.body;
 
     // if temp is undefined then send 400 status code to client client
@@ -35,7 +71,7 @@ const updateTemperature = (req, res) => {
         return res.sendStatus(400);
     }
 
-    tempModel.updateTemp(temp, hum, (error, result) =>{
+    tempModel.addTemp(temp, hum, (error, result) =>{
         if (error){
             // on error log the error to console and send 500 status code to client
             console.log(error);
@@ -49,5 +85,6 @@ const updateTemperature = (req, res) => {
 
 module.exports = {
     getTemperature,
-    updateTemperature
+    getLastHour,
+    addTemperature
 }

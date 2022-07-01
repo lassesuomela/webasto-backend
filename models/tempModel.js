@@ -2,10 +2,13 @@ const db = require('../configs/db');
 
 const temp = {
     getLastUpdated: (cb) => {
-        return db.query("SELECT * FROM tempData WHERE id = 1", cb);
+        return db.query("SELECT * FROM tempData ORDER BY id DESC LIMIT 1", cb);
     },
-    updateTemp: (temp, humidity, cb) => {
-        return db.query("UPDATE tempData SET temperature = ?, humidity = ? WHERE id = 1", [temp, humidity], cb);
+    getLastHour: (cb) => {
+        return db.query("select * from tempData WHERE id%5=0 ORDER BY id DESC LIMIT 12", cb);
+    },
+    addTemp: (temp, humidity, cb) => {
+        return db.query("INSERT INTO tempData (temperature, humidity) VALUES (?, ?)", [temp, humidity], cb);
     }
 }
 

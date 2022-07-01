@@ -73,15 +73,11 @@ const modifyTimers = (req, res) => {
 const displayAllTimers = (req, res) => {
     timer.getAll((error, data) => {
 
-        console.log(error);
-        console.log(data);
-
         if(error){
             console.log(error);
             return res.sendStatus(500);
         }
 
-        console.log(data);
         if(data.length > 0){
             res.json(data);
         }
