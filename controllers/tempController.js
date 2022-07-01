@@ -51,12 +51,12 @@ const getLastHour = (req, res) => {
             return res.json({
                 status:"success",
                 temperatures:temp,
-                humiditys:humi,
+                humidities:humi,
                 timestamps:timestamps
             });
 
         }else{
-            // status not found
+            // temp not found
             console.log('Temperature not found');
             return res.status(500).send({status:"error",error:"Temperature not found"});
         }

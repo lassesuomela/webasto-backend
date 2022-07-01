@@ -20,7 +20,40 @@ const getVoltage = (req, res) => {
     });
 }
 
-const updateVoltage = (req, res) => {
+const getVoltageLastHour = (req, res) => {
+
+    voltageModel.getVoltageHour((error, result) =>{
+        if (error){
+            // on error log the error to console and send 500 status code to client
+            console.log(error);
+            return res.sendStatus(500);
+        }
+        
+        if(result.length > 0){
+
+            let voltage = [];
+            let timestamps = [];
+
+            for (let i = 0; i < result.length; i++){
+                voltage.push(result[i].voltage);
+                timestamps.push(result[i].timestamp);
+            }
+
+            return res.json({
+                status:"success",
+                voltages:voltage,
+                timestamps:timestamps
+            });
+
+        }else{
+            // voltage data not found
+            console.log('Temperature not found');
+            return res.status(500).send({status:"error",error:"Voltage not found"});
+        }
+    });
+}
+
+const addVoltage = (req, res) => {
 
     const {voltage} = req.body;
 
@@ -29,7 +62,7 @@ const updateVoltage = (req, res) => {
         return res.sendStatus(400);
     }
 
-    voltageModel.updateVoltage(voltage, (error, result) =>{
+    voltageModel.addVoltage(voltage, (error, result) =>{
         if (error){
             // on error log the error to console and send 500 status code to client
             console.log(error);
@@ -42,5 +75,6 @@ const updateVoltage = (req, res) => {
 
 module.exports = {
     getVoltage,
-    updateVoltage
+    getVoltageLastHour,
+    addVoltage
 }

@@ -3,10 +3,13 @@ const db = require('../configs/db');
 const voltage = {
 
     getVoltage: (cb) => {
-        return db.query("SELECT * FROM voltageData", cb);
+        return db.query("SELECT * FROM voltageData ORDER BY id DESC LIMIT 1", cb);
     },
-    updateVoltage: (voltage, cb) => {
-        return db.query("UPDATE voltageData SET voltage = ? WHERE id = 1", [voltage], cb);
+    getVoltageHour: (cb) => {
+        return db.query("SELECT * FROM voltageData WHERE id%5=0 ORDER BY id DESC LIMIT 12", cb);
+    },
+    addVoltage: (voltage, cb) => {
+        return db.query("INSERT INTO voltageData (voltage) VALUES (?)", [voltage], cb);
     }
 }
 
