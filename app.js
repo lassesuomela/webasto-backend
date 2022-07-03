@@ -49,7 +49,7 @@ app.use('/api', loginRoutes);
 
 app.use(auth);
 
-app.use(express.static('ota/binaries'));
+app.use('/ota', express.static('ota/binaries'));
 
 app.use('/api', timerRouter);
 app.use('/api', logRouter);

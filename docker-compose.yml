@@ -4,12 +4,12 @@ services:
 
   # Nginx will proxy requests to Nodejs server
   reverse-proxy:
-    image: nginx:latest
+    image: webasto-web:latest
     container_name: reverse_proxy_webasto-srv
     depends_on:
         - webasto-srv
     volumes:
-      - ./reverse_proxy/nginx.conf:/etc/nginx/nginx.conf
+      #- ./reverse_proxy/nginx.conf:/etc/nginx/nginx.conf
       - /root/webasto-backend/saunagaming.com.pem:/root/webasto-backend/saunagaming.com.pem
       - /root/webasto-backend/saunagaming.com.key:/root/webasto-backend/saunagaming.com.key
     ports:
@@ -26,3 +26,4 @@ services:
     restart: on-failure
     environment:
       - DOCKER_APP_PORT=8080
+      - TOKEN=1f1781e62268228b3503bf3112f0f30f4e1308ae20dc6c67af363a77be85f927e8c65cf1d4a81453ed413032edb66141a7358b72f83f9c2c88f3229692adee0d

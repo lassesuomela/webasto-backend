@@ -106,7 +106,7 @@ const getVersion = (req, res) => {
                 res.json({
                     status:"success",
                     version:versionValue.toString(),
-                    link:"/" + fileName
+                    link:"/ota/" + fileName
                 });
             }else{
                 res.json({
