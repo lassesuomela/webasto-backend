@@ -9,6 +9,8 @@ const login = (req, res) => {
     let username = req.body.username;
     let password = req.body.password;
 
+    let ip = (req.header('x-forwarded-for') || req.socket.remoteAddress).split(', ')[0];
+
     // check that the username and password exists
     if(!username || !password){
         return res.json({status:'error', message:'Please fill all fields.'})
@@ -37,7 +39,7 @@ const login = (req, res) => {
                     // password correct
                     // create jwt token and send it in the response
                     
-                    let token = jwt.genToken(username, id);
+                    let token = jwt.genToken(username, id, ip);
                     return res.json({status: 'success', message: 'Successfully logged in.', token:token});
                 }else{
                     // password incorrect

@@ -60,9 +60,26 @@ const auth = (req, res, next) => {
             // if it doesnt match apikey then try to match to jwt token
             jwt.verifyToken(token, (error, result) => {
 
-                // if token matches then go forwards
+                // if token is valid then proceed
                 if(result) {
-                    next();
+
+                    req.jwtIp = result.ipAddress;
+
+                    // check if ip has changed and error out
+
+                    if (req.jwtIp !== ip){
+                        return res.status(403).json({status:"error", message:"Current IP address doesn't match JWT token signed IP address"});
+                    }
+
+                    // allow all GET requests
+                    if(req.method === 'GET'){
+                        next();
+                    }else if(req.url === "/ota/upload") { // allow requests to /ota/upload endpoint
+                        next();
+                    }else{
+                        // show forbidden for other endpoints 
+                        return res.status(403).json({status:"error",message:"Authentication not allowed for this type of request"});
+                    }
                 }else{
                     // else error out
                     console.log(`Unauthorized request from IP: ${ip}`);
