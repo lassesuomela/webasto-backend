@@ -13,7 +13,7 @@ const login = (req, res) => {
 
     // check that the username and password exists
     if(!username || !password){
-        return res.json({status:'error', message:'Please fill all fields.'})
+        return res.json({status:'error', message:'Täytä kaikki kentät.'})
     }
 
     loginModel.getByUsername(username, (err, result) => {
@@ -40,15 +40,15 @@ const login = (req, res) => {
                     // create jwt token and send it in the response
                     
                     let token = jwt.genToken(username, id, ip);
-                    return res.json({status: 'success', message: 'Successfully logged in.', token:token});
+                    return res.json({status: 'success', message: 'Kirjautuminen onnistui.', token:token});
                 }else{
                     // password incorrect
-                    return res.json({status: 'error', message: 'Incorrect username or password.'});
+                    return res.json({status: 'error', message: 'Väärä käyttäjänimi tai salasana.'});
                 }
             })
         }else{
             // user not found
-            return res.json({status: 'error', message: 'Incorrect username or password.'});
+            return res.json({status: 'error', message: 'Väärä käyttäjänimi tai salasana.'});
         }
     })
 }

@@ -52,6 +52,11 @@ const modifyTimers = (req, res) => {
         time2 = req.body[i]['time2'];
         enabled = req.body[i]['enabled'];
         enabled2 = req.body[i]['enabled2'];
+
+        if(req.body[i]['onTime'] > 60){
+            return res.status(400).json({status:"error", error:"Ontime value is too large"});
+        }
+
         onTime = req.body[i]['onTime'];
 
         let tmr = {"time":time, "time2":time2, "enabled":enabled, "enabled2":enabled2, "onTime":onTime, "id":i};
