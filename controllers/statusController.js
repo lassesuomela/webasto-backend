@@ -53,6 +53,10 @@ const modifyStatus = (req, res) =>{
         pulseSent = new Date().getSeconds();
     }
 
+    if(onTime > 60){
+        return res.json({status:"error", message:"onTime value is too large"});
+    }
+
     let data = {
         "newStatus": newStatus, "onTime":onTime, "pulseSent":pulseSent, "rssi":rssi, "id":id
     }
