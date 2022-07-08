@@ -27,8 +27,12 @@ const createOTPCode = (req, res) => {
             return res.status(500);
         }
 
-        const newToken = twofactor.generateToken(result[0].secret);
-        res.json(newToken)
+        if(result.length > 0){
+            const newToken = twofactor.generateToken(result[0].secret);
+            res.json(newToken)
+        }else{
+            res.json({status:"error",message:"No secret found for username" + req.jwtUsername})
+        }
     })
 }
 
