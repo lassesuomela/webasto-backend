@@ -18,7 +18,6 @@ const createSecret = (req, res) => {
 }
 
 const deleteSecret = (req, res) => {
-    console.log(req.body);
     let otpCode = req.body.otp;
 
     // fetch secret based on username
@@ -30,10 +29,9 @@ const deleteSecret = (req, res) => {
         }
 
         let verify = twofactor.verifyToken(result[0].secret, otpCode);
-	const realOTPcode = twofactor.generateToken(result[0].secret);
 
         if(verify === null){
-            return res.status(401).json({status:"error",message:"Väärä OTP koodi", yours:otpCode, correct:realOTPcode});
+            return res.status(401).json({status:"error",message:"Väärä OTP koodi"});
         }else if(verify.delta === 0){
 
             // save null as secret to db
@@ -71,25 +69,24 @@ const createOTPCode = (req, res) => {
     })
 }
 
-const verifyToken = (req, res) => {
-    let otpCode = req.body.otp;
+const verifyToken = (otpCode, username) => {
 
     // fetch secret based on username
-    otp.getSecretByUsername(req.jwtUsername, (err, result) => {
+    otp.getSecretByUsername(username, (err, result) => {
 
         if(err) {
             console.log(err);
-            return res.status(500);
+            return false;
         }
 
         let verify = twofactor.verifyToken(result[0].secret, otpCode);
 
         if(verify === null){
-            return res.status(401).json({status:"error",message:"Väärä OTP koodi"});
+            return false;
         }else if(verify.delta === 0){
-            return res.json({status:"success",message:"OTP koodi hyväksytty"});
+            return true;
         }else{
-            return res.status(401).json({status:"error",message:"Vanha OTP koodi"});
+            return false;
         }
     })
 }

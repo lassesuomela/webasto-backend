@@ -2,6 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
 
+const otpController = require('./otpController');
+
 const storages = multer.diskStorage({
 
     destination: 'ota/',
@@ -46,6 +48,16 @@ const upload = multer(
 
 const uploadFile = (req, res) => {
 
+    let otpCode = req.body.otp;
+
+    otpController.verifyToken(otpCode, req.jwtUsername, (error, result) => {
+
+        console.log("res = " + result);
+        if(!result){
+            return res.json({status:"error", message:"Väärä OTP koodi"});
+        }
+    })
+
     upload(req,res, (err) => {
 
         // check if file is not found 
@@ -75,7 +87,7 @@ const uploadFile = (req, res) => {
 const getVersion = (req, res) => {
 
     if(!fs.existsSync('./ota/version.txt')){
-        return res.json({status:"error", message:"File not found"});
+        return res.json({status:"error", message:"Versio tiedostoa ei löytynyt"});
     }
 
     let stats = fs.statSync('./ota/version.txt');
@@ -111,7 +123,7 @@ const getVersion = (req, res) => {
             }else{
                 res.json({
                     status:"error",
-                    message:"Binary file was not found"
+                    message:"Binääri tiedostoa ei löytynyt"
                 });
             }
         })
