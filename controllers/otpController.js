@@ -71,6 +71,7 @@ const createOTPCode = (req, res) => {
 
 const verifyToken = (req, res) => {
 
+    let otpCode = req.body.otp;
     // fetch secret based on username
     otp.getSecretByUsername(req.jwtUsername, (err, result) => {
 
