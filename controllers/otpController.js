@@ -69,7 +69,7 @@ const createOTPCode = (req, res) => {
     })
 }
 
-const verifyToken = (req, res) => {
+const verifyToken = (req, res, next) => {
 
     let otpCode = req.body.otp;
     // fetch secret based on username

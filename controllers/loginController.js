@@ -45,9 +45,6 @@ const login = (req, res) => {
                     req.id = id;
                     req.ip = ip;
 
-                    console.log(req.user);
-                    console.log(req.id);
-                    console.log(req.ip);
                     return res.json({status: 'success', message: 'Kirjautuminen onnistui.', token:token});
                 }else{
                     // password incorrect
