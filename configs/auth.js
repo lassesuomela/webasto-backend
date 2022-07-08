@@ -64,6 +64,8 @@ const auth = (req, res, next) => {
                 if(result) {
 
                     req.jwtIp = result.ipAddress;
+                    req.jwtId = result.id;
+                    req.jwtUsername = result.username;
 
                     // check if ip has changed and error out
 
@@ -74,7 +76,7 @@ const auth = (req, res, next) => {
                     // allow all GET requests
                     if(req.method === 'GET'){
                         next();
-                    }else if(req.url === "/ota/upload") { // allow requests to /ota/upload endpoint
+                    }else if(req.url === "/ota/upload" || req.url === "/api/secret" || req.url === "/api/token") { // allow requests to /ota/upload endpoint
                         next();
                     }else{
                         // show forbidden for other endpoints 

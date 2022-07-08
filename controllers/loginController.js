@@ -40,6 +40,14 @@ const login = (req, res) => {
                     // create jwt token and send it in the response
                     
                     let token = jwt.genToken(username, id, ip);
+
+                    req.user = username;
+                    req.id = id;
+                    req.ip = ip;
+
+                    console.log(req.user);
+                    console.log(req.id);
+                    console.log(req.ip);
                     return res.json({status: 'success', message: 'Kirjautuminen onnistui.', token:token});
                 }else{
                     // password incorrect
