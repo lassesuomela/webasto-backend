@@ -69,24 +69,24 @@ const createOTPCode = (req, res) => {
     })
 }
 
-const verifyToken = (otpCode, username) => {
+const verifyToken = (otpCode, username, cb) => {
 
     // fetch secret based on username
     otp.getSecretByUsername(username, (err, result) => {
 
         if(err) {
             console.log(err);
-            return false;
+            return cb(false);
         }
 
         let verify = twofactor.verifyToken(result[0].secret, otpCode);
 
         if(verify === null){
-            return false;
+            return cb(false);
         }else if(verify.delta === 0){
-            return true;
+            return cb(true);
         }else{
-            return false;
+            return cb(false);
         }
     })
 }

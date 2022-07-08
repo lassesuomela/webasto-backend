@@ -54,33 +54,33 @@ const uploadFile = (req, res) => {
 
         console.log("res = " + result);
         if(!result){
-            return res.json({status:"error", message:"Väärä OTP koodi"});
-        }
-    })
-
-    upload(req,res, (err) => {
-
-        // check if file is not found 
-
-        if(!req.file){
-            return res.json({status:"error", message:"File not found"});
-        }
-        
-        // return out if multer error
-        if(err){
-            return res.json({status:"error", message:err});
+            return res.status(401).json({status:"error", message:"Väärä OTP koodi"});
         }
 
-        if(req.file.mimetype === 'application/octet-stream'){
-            fs.rename('./ota/' + req.file.filename, './ota/binaries/' + req.file.filename, (err) => {
-                if(err){
-                    console.log(err);
-                    return res.status(500).end();
-                }
-            });
-        }
-        
-        res.status(200).end();
+        upload(req,res, (err) => {
+
+            // check if file is not found 
+    
+            if(!req.file){
+                return res.json({status:"error", message:"File not found"});
+            }
+            
+            // return out if multer error
+            if(err){
+                return res.json({status:"error", message:err});
+            }
+    
+            if(req.file.mimetype === 'application/octet-stream'){
+                fs.rename('./ota/' + req.file.filename, './ota/binaries/' + req.file.filename, (err) => {
+                    if(err){
+                        console.log(err);
+                        return res.status(500).end();
+                    }
+                });
+            }
+            
+            res.status(200).end();
+        })
     })
 }
 
