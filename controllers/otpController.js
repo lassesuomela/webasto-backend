@@ -69,24 +69,24 @@ const createOTPCode = (req, res) => {
     })
 }
 
-const verifyToken = (otpCode, username, cb) => {
+const verifyToken = (req, res) => {
 
     // fetch secret based on username
-    otp.getSecretByUsername(username, (err, result) => {
+    otp.getSecretByUsername(req.jwtUsername, (err, result) => {
 
         if(err) {
             console.log(err);
-            return cb(false);
+            return res.sendStatus(500);
         }
 
         let verify = twofactor.verifyToken(result[0].secret, otpCode);
 
         if(verify === null){
-            return cb(false);
+            return res.json({status:"error", message:"Väärä OTP koodi"});
         }else if(verify.delta === 0){
-            return cb(true);
+            next();
         }else{
-            return cb(false);
+            return res.json({status:"error", message:"Väärä OTP koodi"});
         }
     })
 }

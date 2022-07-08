@@ -2,8 +2,6 @@ const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
 
-const otpController = require('./otpController');
-
 const storages = multer.diskStorage({
 
     destination: 'ota/',
@@ -48,39 +46,29 @@ const upload = multer(
 
 const uploadFile = (req, res) => {
 
-    let otpCode = req.body.otp;
+    upload(req,res, (err) => {
 
-    otpController.verifyToken(otpCode, req.jwtUsername, (error, result) => {
+        // check if file is not found 
 
-        console.log("res = " + result);
-        if(!result){
-            return res.status(401).json({status:"error", message:"Väärä OTP koodi"});
+        if(!req.file){
+            return res.json({status:"error", message:"File not found"});
+        }
+        
+        // return out if multer error
+        if(err){
+            return res.json({status:"error", message:err});
         }
 
-        upload(req,res, (err) => {
-
-            // check if file is not found 
-    
-            if(!req.file){
-                return res.json({status:"error", message:"File not found"});
-            }
-            
-            // return out if multer error
-            if(err){
-                return res.json({status:"error", message:err});
-            }
-    
-            if(req.file.mimetype === 'application/octet-stream'){
-                fs.rename('./ota/' + req.file.filename, './ota/binaries/' + req.file.filename, (err) => {
-                    if(err){
-                        console.log(err);
-                        return res.status(500).end();
-                    }
-                });
-            }
-            
-            res.status(200).end();
-        })
+        if(req.file.mimetype === 'application/octet-stream'){
+            fs.rename('./ota/' + req.file.filename, './ota/binaries/' + req.file.filename, (err) => {
+                if(err){
+                    console.log(err);
+                    return res.status(500).end();
+                }
+            });
+        }
+        
+        res.status(200).end();
     })
 }
 
