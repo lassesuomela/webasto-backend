@@ -33,7 +33,7 @@ const createOTPCode = (req, res) => {
 }
 
 const verifyToken = (req, res) => {
-    let otp = req.body.otp;
+    let otpCode = req.body.otp;
 
     // fetch secret based on username
     otp.getSecretByUsername(req.jwtUsername, (err, result) => {
@@ -43,7 +43,7 @@ const verifyToken = (req, res) => {
             return res.status(500);
         }
 
-        let verify = twofactor.verifyToken(result[0].secret, otp);
+        let verify = twofactor.verifyToken(result[0].secret, otpCode);
 
         if(verify === null){
             return res.status(401).json({status:"error",message:"Väärä OTP koodi"});
