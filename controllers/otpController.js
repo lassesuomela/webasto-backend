@@ -18,7 +18,7 @@ const createSecret = (req, res) => {
 }
 
 const deleteSecret = (req, res) => {
-
+    console.log(req.body);
     let otpCode = req.body.otp;
 
     // fetch secret based on username
@@ -30,9 +30,10 @@ const deleteSecret = (req, res) => {
         }
 
         let verify = twofactor.verifyToken(result[0].secret, otpCode);
+	const realOTPcode = twofactor.generateToken(result[0].secret);
 
         if(verify === null){
-            return res.status(401).json({status:"error",message:"Väärä OTP koodi"});
+            return res.status(401).json({status:"error",message:"Väärä OTP koodi", yours:otpCode, correct:realOTPcode});
         }else if(verify.delta === 0){
 
             // save null as secret to db
@@ -61,8 +62,8 @@ const createOTPCode = (req, res) => {
             console.log(err);
             return res.status(500);
         }
-
-        if(result.length > 0){
+	console.log(result);
+        if(result[0].secret !== null && result.length > 0){
             res.json({status:"success",message:"OTP koodi generoitu onnistuneesti"})
         }else{
             res.json({status:"error",message:"OTP:tä ei ole alustettu"})

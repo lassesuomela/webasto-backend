@@ -76,7 +76,7 @@ const auth = (req, res, next) => {
                     // allow all GET requests
                     if(req.method === 'GET'){
                         next();
-                    }else if(req.url === "/ota/upload" || req.url === "/api/secret" || req.url === "/api/token") { // allow requests to /ota/upload endpoint
+                    }else if(req.url === "/ota/upload" || req.url === "/api/secret" || req.url === "/api/token" || req.url === "/api/secret/remove") { // allow requests to /ota/upload endpoint
                         next();
                     }else{
                         // show forbidden for other endpoints 
