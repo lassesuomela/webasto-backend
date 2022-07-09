@@ -20,6 +20,10 @@ const createSecret = (req, res) => {
 const deleteSecret = (req, res) => {
     let otpCode = req.body.otp;
 
+    if(!otpCode) {
+        return res.status(400).json({status:"error",message:"Täytä kaikki kentät"})
+    }
+
     // fetch secret based on username
     otp.getSecretByUsername(req.jwtUsername, (err, result) => {
 
@@ -74,6 +78,14 @@ const verifyToken = (req, res, next) => {
     let otpCode = req.body.otp;
     let username = req.body.username;
 
+    if(!otpCode || !username) {
+        return res.status(400).json({status:"error",message:"Täytä kaikki kentät"})
+    }
+
+    if(otpCode.length != 6){
+        return res.status(400).json({status:"error",message:"Väärä OTP koodi"})
+    }
+
     // fetch secret based on username
     otp.getSecretByUsername(username, (err, result) => {
 
@@ -95,8 +107,6 @@ const verifyToken = (req, res, next) => {
         }else{
             return res.json({status:"error", message:"Väärä käyttäjänimi tai salasana"});
         }
-
-        
     })
 }
 

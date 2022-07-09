@@ -44,8 +44,6 @@ app.use(express.json());
 app.use(morgan('dev'));
 app.use(limiter);
 
-app.use(express.static('public'));
-
 app.use('/api', loginRoutes);
 
 app.use(auth);
