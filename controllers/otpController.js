@@ -78,12 +78,13 @@ const verifyToken = (req, res, next) => {
     let otpCode = req.body.otp;
     let username = req.body.username;
 
-    if(!otpCode || !username) {
+    if(!username) {
         return res.status(400).json({status:"error",message:"Täytä kaikki kentät"})
     }
 
-    if(otpCode.length != 6){
-        return res.status(400).json({status:"error",message:"OTP koodi liian lyhyt"})
+    if(otpCode){
+        if(otpCode.length != 6)
+            return res.status(400).json({status:"error",message:"OTP koodi on väärän pituinen"})
     }
 
     // fetch secret based on username
@@ -95,9 +96,15 @@ const verifyToken = (req, res, next) => {
         }
 
         if(result.length > 0){
-
-            if(!result[0].secret){
-                console.log('No OTP configured.');
+            
+            if(!otpCode) {
+                if(!result[0].secret){
+                    console.log('No OTP configured.');
+                    next();
+                    return;
+                }else{
+                    return res.status(400).json({status:"error",message:"Täytä kaikki kentät"})
+                }
             }
 
             req.hasOTPConfigured = true;

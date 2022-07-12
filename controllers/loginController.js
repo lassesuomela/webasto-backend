@@ -39,13 +39,14 @@ const login = (req, res) => {
                     // password correct
                     // create jwt token and send it in the response
                     
-                    let token = jwt.genToken(username, id, ip);
+                    let token = jwt.genToken(username, id, ip, req.hasOTPConfigured);
 
                     req.user = username;
                     req.id = id;
                     req.ip = ip;
 
                     return res.json({status: 'success', message: 'Kirjautuminen onnistui.', token:token});
+
                 }else{
                     // password incorrect
                     return res.json({status: 'error', message: 'Väärä käyttäjänimi tai salasana.'});
