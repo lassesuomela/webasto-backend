@@ -46,6 +46,8 @@ const upload = multer(
 
 const uploadFile = (req, res) => {
 
+    console.log('Has OTP: ' + req.jwtOTP);
+
     upload(req,res, (err) => {
 
         // check if file is not found 

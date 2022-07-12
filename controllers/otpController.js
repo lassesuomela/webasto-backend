@@ -83,7 +83,7 @@ const verifyToken = (req, res, next) => {
     }
 
     if(otpCode.length != 6){
-        return res.status(400).json({status:"error",message:"Väärä OTP koodi"})
+        return res.status(400).json({status:"error",message:"OTP koodi liian lyhyt"})
     }
 
     // fetch secret based on username
@@ -95,6 +95,13 @@ const verifyToken = (req, res, next) => {
         }
 
         if(result.length > 0){
+
+            if(!result[0].secret){
+                console.log('No OTP configured.');
+            }
+
+            req.hasOTPConfigured = true;
+
             let verify = twofactor.verifyToken(result[0].secret, otpCode);
 
             if(verify === null){

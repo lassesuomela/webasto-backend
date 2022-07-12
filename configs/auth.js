@@ -66,6 +66,7 @@ const auth = (req, res, next) => {
                     req.jwtIp = result.ipAddress;
                     req.jwtId = result.id;
                     req.jwtUsername = result.username;
+                    req.jwtOTP = result.OTP;
 
                     // check if ip has changed and error out
 
