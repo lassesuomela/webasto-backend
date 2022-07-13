@@ -21,7 +21,7 @@ const deleteSecret = (req, res) => {
     let otpCode = req.body.otp;
 
     if(!otpCode) {
-        return res.status(400).json({status:"error",message:"Täytä kaikki kentät"})
+        return res.status(400).json({status:"error",message:"OTP koodi puuttuu"})
     }
 
     // fetch secret based on username
@@ -97,14 +97,12 @@ const verifyToken = (req, res, next) => {
 
         if(result.length > 0){
             
-            if(!otpCode) {
-                if(!result[0].secret){
-                    console.log('No OTP configured.');
-                    next();
-                    return;
-                }else{
-                    return res.status(400).json({status:"error",message:"Täytä kaikki kentät"})
-                }
+            if(!result[0].secret){
+                console.log('No OTP configured.');
+                next();
+                return;
+            }else if(!otpCode){
+                return res.status(400).json({status:"error",message:"OTP koodi puuttuu mutta OTP on konfiguroitu"})
             }
 
             req.hasOTPConfigured = true;
