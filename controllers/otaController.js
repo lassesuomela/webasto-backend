@@ -49,6 +49,10 @@ const uploadFile = (req, res) => {
 
     console.log('Has OTP: ' + req.jwtOTP);
 
+    if(!req.jwtOTP){
+        return res.json({status:"error", message:"OTP pitää olla konfiguroitu"});
+    }
+
     upload(req,res, (err) => {
 
         // check if file is not found 
