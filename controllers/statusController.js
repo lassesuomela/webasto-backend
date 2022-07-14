@@ -1,4 +1,5 @@
 const status = require('../models/statusModel');
+const cache = require('../configs/cache');
 
 const getStatus = (req, res) =>{
 
