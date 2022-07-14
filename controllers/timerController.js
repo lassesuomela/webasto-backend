@@ -1,6 +1,10 @@
 const timer = require('../models/timerModel');
+const cache = require('../configs/cache');
 
 const getCurrentDaysTimer = (req, res) => {
+
+    // use url as key
+    const key = req.originalUrl;
 
     let currentDay = new Date().getDay();
     //let currentDay = 1; // for debugging on weekends
@@ -33,6 +37,9 @@ const getCurrentDaysTimer = (req, res) => {
                 "onTime":onTime
             };
 
+            // cache data
+            cache.saveCache(key, jsonData);
+
             //console.log(jsonData);
             return res.json(jsonData);
         }else{
@@ -43,6 +50,12 @@ const getCurrentDaysTimer = (req, res) => {
 }
 
 const modifyTimers = (req, res) => {
+
+    // use url as key
+    const key = req.originalUrl;
+
+    // delete cached data
+    cache.deleteCache(key);
 
     let time, time2, enabled, enabled2, onTime;
 
@@ -76,12 +89,19 @@ const modifyTimers = (req, res) => {
 }
 
 const displayAllTimers = (req, res) => {
+
+    // use url as key
+    const key = req.originalUrl;
+
     timer.getAll((error, data) => {
 
         if(error){
             console.log(error);
             return res.sendStatus(500);
         }
+
+        // cache data
+        cache.saveCache(key, data);
 
         if(data.length > 0){
             res.json(data);

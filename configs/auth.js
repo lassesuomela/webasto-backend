@@ -9,7 +9,7 @@ const apikeyModel = require('../models/apikeyModel');
 
 const auth = (req, res, next) => {
 
-    if(process.env.ENV === 'dev') {
+    if(process.env.NODE_ENV === 'dev') {
         console.log(req.headers);
         console.log(req.body);
     }
@@ -18,7 +18,7 @@ const auth = (req, res, next) => {
 
     let ipData = geoIp.lookup(ip);
     
-    if(process.env.ENV !== 'dev') {
+    if(process.env.NODE_ENV !== 'dev') {
         if(ipData === null){
             console.log(`No GEO IP data found for IP: ${ip}`);
             return res.sendStatus(403);
@@ -29,7 +29,7 @@ const auth = (req, res, next) => {
     // get the apikey from the authorization header
     let apiKey = req.headers.authorization;
     
-    if(process.env.ENV !== 'dev') {
+    if(process.env.NODE_ENV !== 'dev') {
         if(ipData.country !== 'FI') {
             console.log(`Wrong country: ${ipData.country}\nFrom IP: ${ip}`);
             console.log('Using API key = ' + apiKey);

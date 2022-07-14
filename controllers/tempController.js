@@ -1,6 +1,10 @@
 const tempModel = require('../models/tempModel');
+const cache = require('../configs/cache');
 
 const getTemperature = (req, res) => {
+
+    // use url as key
+    const key = req.originalUrl;
 
     tempModel.getLastUpdated((error, result) =>{
         if (error){
@@ -13,11 +17,16 @@ const getTemperature = (req, res) => {
             let temp = result[0].temperature;
             let humi = result[0].humidity;
 
-            return res.json({
+            let data = {
                 status:"success",
                 temperature:temp,
                 humidity:humi
-            });
+            }
+
+            // cache data
+            cache.saveCache(key, payload);
+
+            return res.json();
 
         }else{
             // status not found
@@ -28,6 +37,9 @@ const getTemperature = (req, res) => {
 }
 
 const getLastHour = (req, res) => {
+
+    // use url as key
+    const key = req.originalUrl;
 
     tempModel.getLastHour((error, result) =>{
         if (error){
@@ -48,12 +60,17 @@ const getLastHour = (req, res) => {
                 timestamps.push(result[i].timestamp);
             }
 
-            return res.json({
+            let data = {
                 status:"success",
                 temperatures:temp,
                 humidities:humi,
                 timestamps:timestamps
-            });
+            };
+
+            // cache data
+            cache.saveCache(key, data);
+
+            return res.json(data);
 
         }else{
             // temp not found
@@ -64,6 +81,13 @@ const getLastHour = (req, res) => {
 }
 
 const addTemperature = (req, res) => {
+
+    // use url as key
+    const key = req.originalUrl;
+
+    // remove data from cache
+    cache.deleteCache(key);
+
     const {temp, hum} = req.body;
 
     // if temp is undefined then send 400 status code to client client

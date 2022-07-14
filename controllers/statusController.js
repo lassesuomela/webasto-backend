@@ -2,6 +2,9 @@ const status = require('../models/statusModel');
 
 const getStatus = (req, res) =>{
 
+    // use url as key
+    const key = req.originalUrl;
+
     let id = req.params.id;
     // if one of the variables are undefined then send 400 status code to the client
     if(id === undefined){
@@ -23,14 +26,19 @@ const getStatus = (req, res) =>{
             let timestamp = result[0].timestamp;
             let rssi = result[0].rssi;
 
-            return res.status(200).send({
+            let data = {
                 "status":currentStatus,
                 "onTime":onTime,
                 "timestamp":timestamp,
                 "pulseSent":pulseSent,
                 "rssi":rssi
 
-            });
+            };
+
+            // cache data
+            cache.saveCache(key, data);
+
+            return res.json(data);
         }else{
             // status not found
             console.log('Status not set');
@@ -40,6 +48,10 @@ const getStatus = (req, res) =>{
 };
 
 const modifyStatus = (req, res) =>{
+
+    // use url as key
+    const key = req.originalUrl;
+    cache.deleteCache(key);
 
     let {newStatus, onTime, pulseSent, rssi} = req.body;
     let id = req.params.id;

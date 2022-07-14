@@ -1,6 +1,11 @@
 const logs = require('../models/logModel');
+const cache = require('../configs/cache');
 
 const updateLogs = (req, res) => {
+
+    // use url as key
+    const key = req.originalUrl;
+    cache.deleteCache(key);
 
     // get variables from query
     const {startTime, endTime, onTime} = req.body;
@@ -27,6 +32,9 @@ const updateLogs = (req, res) => {
 
 const fetchLastLog = (req, res) => {
 
+    // use url as key
+    const key = req.originalUrl;
+
     logs.getLastLog((error, result) =>{
         if (error){
             // on error log the error to console and send 500 status code to client
@@ -47,6 +55,8 @@ const fetchLastLog = (req, res) => {
                 "onTime":onTime,
                 "timestamp":timestamp
             };
+
+            cache.saveCache(key, payload);
             
             return res.json({status:"success", data:payload});
         }else{
@@ -57,6 +67,9 @@ const fetchLastLog = (req, res) => {
 }
 
 const fetchNLog = (req, res) => {
+
+    // use url as key
+    const key = req.originalUrl;
 
     if(!req.params.page){
         return res.json({status:"error",message:"Please fill all fields."});
@@ -94,12 +107,15 @@ const fetchNLog = (req, res) => {
             }
 
             if(result.length > 0){
-                res.json({status:"success", maxPageAmount: maxPage, data:result});
+                let data = {status:"success", maxPageAmount: maxPage, data:result}
+                
+                cache.saveCache(key, data);
+                
+                res.json(data);
             }else{
                 res.json({status:"error",message:"No logs found."});
             }
         })
-
     })
 }
 
