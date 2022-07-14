@@ -26,7 +26,7 @@ const getTemperature = (req, res) => {
             // cache data
             cache.saveCache(key, data);
 
-            return res.json();
+            return res.json(data);
 
         }else{
             // status not found

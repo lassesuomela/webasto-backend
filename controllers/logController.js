@@ -56,9 +56,11 @@ const fetchLastLog = (req, res) => {
                 "timestamp":timestamp
             };
 
-            cache.saveCache(key, payload);
+            let data = {status:"success", data:payload}
+
+            cache.saveCache(key, data);
             
-            return res.json({status:"success", data:payload});
+            return res.json(data);
         }else{
             // status not found
             return res.json({status:"error",error:"Logs not found"});

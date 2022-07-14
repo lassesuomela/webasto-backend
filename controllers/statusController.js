@@ -33,7 +33,6 @@ const getStatus = (req, res) =>{
                 "timestamp":timestamp,
                 "pulseSent":pulseSent,
                 "rssi":rssi
-
             };
 
             // cache data
