@@ -11,12 +11,10 @@ const checkCache = (req, res, next) => {
 
     if(cacheHit){
         // return cached data
-        console.log('Cache HIT');
         res.setHeader('X-Cache', 'HIT');
         return res.json(cacheHit)
     }else{
         res.setHeader('X-Cache', 'MISS');
-        console.log('Cache MISS');
         next();
     }
 }

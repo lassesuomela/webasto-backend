@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
+const cache = require('../configs/cache');
 
 const storages = multer.diskStorage({
 
@@ -76,6 +77,9 @@ const uploadFile = (req, res) => {
 
 const getVersion = (req, res) => {
 
+    // use url as key
+    const key = req.originalUrl;
+
     if(!fs.existsSync('./ota/version.txt')){
         return res.json({status:"error", message:"Versio tiedostoa ei löytynyt"});
     }
@@ -105,11 +109,16 @@ const getVersion = (req, res) => {
             })
     
             if(typeof fileName !== "undefined"){
-                res.json({
+
+                let payload = {
                     status:"success",
                     version:versionValue.toString(),
                     link:"/ota/" + fileName
-                });
+                };
+
+                cache.saveCache(key, payload);
+
+                res.json(payload);
             }else{
                 res.json({
                     status:"error",
