@@ -24,7 +24,7 @@ const getTemperature = (req, res) => {
             }
 
             // cache data
-            cache.saveCache(key, payload);
+            cache.saveCache(key, data);
 
             return res.json();
 

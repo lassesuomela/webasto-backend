@@ -58,7 +58,7 @@ const getVoltageLastHour = (req, res) => {
             };
 
             // cache data
-            cache.saveCache(key, jsonData);
+            cache.saveCache(key, data);
 
             return res.json(data);
 
