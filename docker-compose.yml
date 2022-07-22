@@ -20,10 +20,12 @@ services:
   webasto-srv:
     image: webasto-srv:latest
     container_name: webasto-srv
+    volumes:
+      - /root/webasto-backend/ota:/app/ota
     ports:
       - 8080:8080
     network_mode: "host"
     restart: on-failure
     environment:
       - DOCKER_APP_PORT=8080
-      - TOKEN=1f1781e62268228b3503bf3112f0f30f4e1308ae20dc6c67af363a77be85f927e8c65cf1d4a81453ed413032edb66141a7358b72f83f9c2c88f3229692adee0d
+      - TOKEN=JWT_TOKEN
