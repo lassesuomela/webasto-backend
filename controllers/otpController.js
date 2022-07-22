@@ -91,6 +91,8 @@ const createOTPCode = (req, res) => {
 
 const verifyToken = (req, res, next) => {
 
+    let ua = req.header('user-agent');
+
     let ip = (req.header('x-forwarded-for') || req.socket.remoteAddress).split(', ')[0];
 
     let otpCode = req.body.otp;
@@ -137,7 +139,7 @@ const verifyToken = (req, res, next) => {
 
                     let id = result[0].id;
                     if(verify === null){
-                        historyController.createRecord('Kirjautuminen epäonnistui.', ip, id, req.ua, (error, result) => {
+                        historyController.createRecord('Kirjautuminen epäonnistui.', ip, id, ua, (error, result) => {
                             if(error){
                                 console.log(error);
                             }
@@ -147,7 +149,7 @@ const verifyToken = (req, res, next) => {
                     }else if(verify.delta === 0){
                         next();
                     }else{
-                        historyController.createRecord('Kirjautuminen epäonnistui.', ip, id, req.ua, (error, result) => {
+                        historyController.createRecord('Kirjautuminen epäonnistui.', ip, id, ua, (error, result) => {
                             if(error){
                                 console.log(error);
                             }
