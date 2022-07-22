@@ -28,4 +28,3 @@ services:
     restart: on-failure
     environment:
       - DOCKER_APP_PORT=8080
-      - TOKEN=JWT_TOKEN
