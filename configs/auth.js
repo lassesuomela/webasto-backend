@@ -25,7 +25,6 @@ const auth = (req, res, next) => {
         }
     }
 
-
     // get the apikey from the authorization header
     let apiKey = req.headers.authorization;
     
