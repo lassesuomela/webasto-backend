@@ -16,7 +16,14 @@ const createSecret = (req, res) => {
             return res.status(500);
         }
 
-        res.json({secret: newSecret})
+        historyController.createRecord('OTP konfiguroitu.', req.jwtIp, req.jwtId, (error, result) => {
+            if(error){
+                console.log(error);
+            }
+
+            res.json({secret: newSecret})
+
+        })
     })
 }
 
@@ -48,7 +55,13 @@ const deleteSecret = (req, res) => {
                     return res.status(500);
                 }
 
-                res.json({status:"success",message:"OTP poistettu käytöstä"});
+                historyController.createRecord('OTP poistettu käytöstä.', req.jwtIp, req.jwtId, (error, result) => {
+                    if(error){
+                        console.log(error);
+                    }
+        
+                    res.json({status:"success",message:"OTP poistettu käytöstä"});
+                })
             })
 
             return res.json({status:"success",message:"OTP koodi hyväksytty"});

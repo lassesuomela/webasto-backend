@@ -3,6 +3,8 @@ const path = require('path');
 const multer = require('multer');
 const cache = require('../configs/cache');
 
+const historyController = require('../controllers/historyController');
+
 const storages = multer.diskStorage({
 
     destination: 'ota/',
@@ -47,12 +49,10 @@ const upload = multer(
 
 const uploadFile = (req, res) => {
 
-    console.log('Has OTP: ' + req.jwtOTP);
-
     if(!req.jwtOTP){
         return res.json({status:"error", message:"OTP pitää olla konfiguroitu"});
     }
-
+    
     upload(req,res, (err) => {
 
         // check if file is not found 
@@ -74,8 +74,14 @@ const uploadFile = (req, res) => {
                 }
             });
         }
-        
-        res.status(200).end();
+
+        historyController.createRecord('Tiedosto lähetetty.', req.jwtIp, req.jwtId, (error, result) => {
+            if(error){
+                console.log(error);
+            }
+
+            res.status(200).end();
+        })
     })
 }
 

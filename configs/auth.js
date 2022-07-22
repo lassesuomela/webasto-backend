@@ -6,6 +6,7 @@ const geoIp = require('geoip-lite');
 const jwt = require('./jwt');
 
 const apikeyModel = require('../models/apikeyModel');
+const historyController = require('../controllers/historyController');
 
 const auth = (req, res, next) => {
 
@@ -54,7 +55,14 @@ const auth = (req, res, next) => {
         // found match for the apikey in the db
         if(result.length > 0){
 
-            next();
+            historyController.createRecord('API avaimella kirjauduttu.', ip, result[0].id, (error, result) => {
+                if(error){
+                    console.log(error);
+                }
+    
+                next();
+            })
+
         }else{
             // if it doesnt match apikey then try to match to jwt token
             jwt.verifyToken(token, (error, result) => {
