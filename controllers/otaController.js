@@ -49,6 +49,8 @@ const upload = multer(
 
 const uploadFile = (req, res) => {
 
+    let ua = req.headers.get('User-Agent');
+
     if(!req.jwtOTP){
         return res.json({status:"error", message:"OTP pitää olla konfiguroitu"});
     }
@@ -75,7 +77,7 @@ const uploadFile = (req, res) => {
             });
         }
 
-        historyController.createRecord('Tiedosto lähetetty.', req.jwtIp, req.jwtId, (error, result) => {
+        historyController.createRecord('Tiedosto ladattu.', req.jwtIp, req.jwtId, ua, (error, result) => {
             if(error){
                 console.log(error);
             }

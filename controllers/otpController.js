@@ -6,6 +6,8 @@ const login = require('../models/loginModel');
 
 const createSecret = (req, res) => {
 
+    let ua = req.headers.get('User-Agent');
+
     // gen new secret
     const newSecret = twofactor.generateSecret({name: "Webaston ohjain", account: req.jwtUsername});
 
@@ -16,7 +18,7 @@ const createSecret = (req, res) => {
             return res.status(500);
         }
 
-        historyController.createRecord('OTP konfiguroitu.', req.jwtIp, req.jwtId, (error, result) => {
+        historyController.createRecord('OTP konfiguroitu.', req.jwtIp, req.jwtId, ua, (error, result) => {
             if(error){
                 console.log(error);
             }
@@ -29,6 +31,8 @@ const createSecret = (req, res) => {
 
 const deleteSecret = (req, res) => {
     let otpCode = req.body.otp;
+
+    let ua = req.headers.get('User-Agent');
 
     if(!otpCode) {
         return res.status(400).json({status:"error",message:"OTP koodi puuttuu"})
@@ -55,7 +59,7 @@ const deleteSecret = (req, res) => {
                     return res.status(500);
                 }
 
-                historyController.createRecord('OTP poistettu käytöstä.', req.jwtIp, req.jwtId, (error, result) => {
+                historyController.createRecord('OTP poistettu käytöstä.', req.jwtIp, req.jwtId, ua, (error, result) => {
                     if(error){
                         console.log(error);
                     }
@@ -90,6 +94,8 @@ const createOTPCode = (req, res) => {
 }
 
 const verifyToken = (req, res, next) => {
+
+    let ua = req.headers.get('User-Agent');
 
     let ip = (req.header('x-forwarded-for') || req.socket.remoteAddress).split(', ')[0];
 
@@ -137,7 +143,7 @@ const verifyToken = (req, res, next) => {
 
                     let id = result[0].id;
                     if(verify === null){
-                        historyController.createRecord('Kirjautuminen epäonnistui.', ip, id, (error, result) => {
+                        historyController.createRecord('Kirjautuminen epäonnistui.', ip, id, ua, (error, result) => {
                             if(error){
                                 console.log(error);
                             }
@@ -147,7 +153,7 @@ const verifyToken = (req, res, next) => {
                     }else if(verify.delta === 0){
                         next();
                     }else{
-                        historyController.createRecord('Kirjautuminen epäonnistui.', ip, id, (error, result) => {
+                        historyController.createRecord('Kirjautuminen epäonnistui.', ip, id, ua, (error, result) => {
                             if(error){
                                 console.log(error);
                             }

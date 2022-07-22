@@ -55,7 +55,11 @@ const auth = (req, res, next) => {
         // found match for the apikey in the db
         if(result.length > 0){
 
-            historyController.createRecord('API avaimella kirjauduttu.', ip, result[0].id, (error, result) => {
+            let ua = req.headers.get('User-Agent');
+
+            console.log(ua);
+
+            historyController.createRecord('API avaimella tunnistauduttu.', ip, result[0].id, ua, (error, result) => {
                 if(error){
                     console.log(error);
                 }
