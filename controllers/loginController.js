@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('../configs/jwt');
 
 const loginModel = require('../models/loginModel');
-const historyController = require('../models/historyController');
+const historyController = require('../controllers/historyController');
 
 const login = (req, res) => {
 
