@@ -9,6 +9,11 @@ const apikeyModel = require('../models/apikeyModel');
 const historyController = require('../controllers/historyController');
 
 const auth = (req, res, next) => {
+    let ua = req.header('user-agent');
+
+    req.ua = ua;
+
+    console.log('UA = ' + req.ua);
 
     if(process.env.NODE_ENV === 'dev') {
         console.log(req.headers);
@@ -54,10 +59,6 @@ const auth = (req, res, next) => {
 
         // found match for the apikey in the db
         if(result.length > 0){
-
-            let ua = req.header('User-Agent');
-
-            console.log(ua);
 
             historyController.createRecord('API avaimella tunnistauduttu.', ip, result[0].id, ua, (error, result) => {
                 if(error){

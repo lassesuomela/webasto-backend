@@ -12,8 +12,6 @@ const login = (req, res) => {
 
     let ip = (req.header('x-forwarded-for') || req.socket.remoteAddress).split(', ')[0];
 
-    let ua = req.header('User-Agent');
-
     // check that the username and password exists
     if(!username || !password){
         return res.json({status:'error', message:'Täytä kaikki kentät.'})
@@ -50,7 +48,7 @@ const login = (req, res) => {
 
                     // create history record if success on logon
 
-                    historyController.createRecord('Kirjautuminen onnistui.', ip, id, ua, (error, result) => {
+                    historyController.createRecord('Kirjautuminen onnistui.', ip, id, req.ua, (error, result) => {
                         if(error){
                             console.log(error);
                         }
@@ -62,7 +60,7 @@ const login = (req, res) => {
                     // password incorrect
                     // create history record if failed on logon
 
-                    historyController.createRecord('Kirjautuminen epäonnistui.', ip, id, ua, (error, result) => {
+                    historyController.createRecord('Kirjautuminen epäonnistui.', ip, id, req.ua, (error, result) => {
                         if(error){
                             console.log(error);
                         }
