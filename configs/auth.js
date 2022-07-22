@@ -13,8 +13,6 @@ const auth = (req, res, next) => {
 
     req.ua = ua;
 
-    console.log('UA = ' + req.ua);
-
     if(process.env.NODE_ENV === 'dev') {
         console.log(req.headers);
         console.log(req.body);
@@ -56,11 +54,10 @@ const auth = (req, res, next) => {
         if(error) {
             console.log(error);
         }
-
         // found match for the apikey in the db
         if(result.length > 0){
 
-            historyController.createRecord('API avaimella tunnistauduttu.', ip, result[0].id, ua, (error, result) => {
+            historyController.createRecord('API avaimella tunnistauduttu.', ip, result[0].id, req.ua, (error, result) => {
                 if(error){
                     console.log(error);
                 }

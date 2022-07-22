@@ -7,6 +7,8 @@ const historyController = require('../controllers/historyController');
 
 const login = (req, res) => {
 
+    let ua = req.header('user-agent');
+
     let username = req.body.username;
     let password = req.body.password;
 
@@ -48,7 +50,7 @@ const login = (req, res) => {
 
                     // create history record if success on logon
 
-                    historyController.createRecord('Kirjautuminen onnistui.', ip, id, req.ua, (error, result) => {
+                    historyController.createRecord('Kirjautuminen onnistui.', ip, id, ua, (error, result) => {
                         if(error){
                             console.log(error);
                         }
@@ -60,7 +62,7 @@ const login = (req, res) => {
                     // password incorrect
                     // create history record if failed on logon
 
-                    historyController.createRecord('Kirjautuminen epäonnistui.', ip, id, req.ua, (error, result) => {
+                    historyController.createRecord('Kirjautuminen epäonnistui.', ip, id, ua, (error, result) => {
                         if(error){
                             console.log(error);
                         }

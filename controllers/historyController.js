@@ -1,8 +1,8 @@
 const history = require('../models/historyModel');
 
-const createRecord = (action, ip, id, cb) => {
+const createRecord = (action, ip, id, ua, cb) => {
 
-    history.create(action, ip, id, (err, result) => {
+    history.create(action, ip, id, ua, (err, result) => {
         cb(err, result);
     })
 }
