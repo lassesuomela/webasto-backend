@@ -49,7 +49,7 @@ const upload = multer(
 
 const uploadFile = (req, res) => {
 
-    let ua = req.headers.get('User-Agent');
+    let ua = req.header('User-Agent');
 
     if(!req.jwtOTP){
         return res.json({status:"error", message:"OTP pitää olla konfiguroitu"});

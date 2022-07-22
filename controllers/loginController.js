@@ -12,7 +12,7 @@ const login = (req, res) => {
 
     let ip = (req.header('x-forwarded-for') || req.socket.remoteAddress).split(', ')[0];
 
-    let ua = req.headers.get('User-Agent');
+    let ua = req.header('User-Agent');
 
     // check that the username and password exists
     if(!username || !password){

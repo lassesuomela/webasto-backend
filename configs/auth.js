@@ -55,7 +55,7 @@ const auth = (req, res, next) => {
         // found match for the apikey in the db
         if(result.length > 0){
 
-            let ua = req.headers.get('User-Agent');
+            let ua = req.header('User-Agent');
 
             console.log(ua);
 

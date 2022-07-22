@@ -6,7 +6,7 @@ const login = require('../models/loginModel');
 
 const createSecret = (req, res) => {
 
-    let ua = req.headers.get('User-Agent');
+    let ua = req.header('User-Agent');
 
     // gen new secret
     const newSecret = twofactor.generateSecret({name: "Webaston ohjain", account: req.jwtUsername});
@@ -32,7 +32,7 @@ const createSecret = (req, res) => {
 const deleteSecret = (req, res) => {
     let otpCode = req.body.otp;
 
-    let ua = req.headers.get('User-Agent');
+    let ua = req.header('User-Agent');
 
     if(!otpCode) {
         return res.status(400).json({status:"error",message:"OTP koodi puuttuu"})
@@ -95,7 +95,7 @@ const createOTPCode = (req, res) => {
 
 const verifyToken = (req, res, next) => {
 
-    let ua = req.headers.get('User-Agent');
+    let ua = req.header('User-Agent');
 
     let ip = (req.header('x-forwarded-for') || req.socket.remoteAddress).split(', ')[0];
 
