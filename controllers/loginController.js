@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('../configs/jwt');
 
 const loginModel = require('../models/loginModel');
+const historyController = require('../models/historyController');
 
 const login = (req, res) => {
 
@@ -45,11 +46,27 @@ const login = (req, res) => {
                     req.id = id;
                     req.ip = ip;
 
-                    return res.json({status: 'success', message: 'Kirjautuminen onnistui.', token:token});
+                    // create history record if success on logon
+
+                    historyController.createRecord('Kirjautuminen onnistui.', ip, id, (error, result) => {
+                        if(error){
+                            console.log(error);
+                        }
+                        return res.json({status: 'success', message: 'Kirjautuminen onnistui.', token:token});
+
+                    })
 
                 }else{
                     // password incorrect
-                    return res.json({status: 'error', message: 'Väärä käyttäjänimi tai salasana.'});
+                    // create history record if failed on logon
+
+                    historyController.createRecord('Kirjautuminen epäonnistui.', ip, id, (error, result) => {
+                        if(error){
+                            console.log(error);
+                        }
+                        return res.json({status: 'error', message: 'Väärä käyttäjänimi tai salasana.'});
+
+                    })
                 }
             })
         }else{

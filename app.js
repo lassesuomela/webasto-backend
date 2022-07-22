@@ -19,6 +19,7 @@ const otaRoutes = require('./routes/otaRoutes');
 const loginRoutes = require('./routes/loginRoutes');
 const uptimeRoutes = require('./routes/uptimeRoutes');
 const otpRoutes = require('./routes/otpRoutes');
+const historyRoutes = require('./routes/historyRoutes');
 
 const port = process.env.DOCKER_APP_PORT || 8081;
 
@@ -58,6 +59,7 @@ app.use('/api', tempRouter);
 app.use('/api', voltageRouter);
 app.use('/api', uptimeRoutes);
 app.use('/api', otpRoutes);
+app.use('/api', historyRoutes);
 
 app.use('/ota', otaRoutes);
 
