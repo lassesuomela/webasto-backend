@@ -27,6 +27,35 @@ const get7 = (req, res) => {
     })
 }
 
+const getAvgOfLast7 = (req, res) => {
+
+    // use url as key
+    const key = req.originalUrl;
+
+    uptime.getLast7((error, result) => {
+        if(error) {
+            console.log(error);
+            return res.sendStatus(500);
+        }
+
+        if(result.length > 0) {
+
+            console.log(result);
+
+            let data = {status:"success",data:result};
+
+            // cache data
+            cache.saveCache(key, data);
+
+            res.json(data)
+        }else{
+            res.json({status:"error",message:"No uptime data found."})
+        }
+
+    })
+}
+
+
 const add = (req, res) => {
 
     // use url as key
@@ -54,5 +83,6 @@ const add = (req, res) => {
 
 module.exports = {
     get7,
+    getAvgOfLast7,
     add
 }

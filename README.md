@@ -28,10 +28,10 @@ DB_HOST=localhost
 DB_USERNAME=root
 DB_PASSWORD=root
 DB_DATABASE=webasto
-
-API_KEY=some_bcrypt_hashed_secret
+NODE_ENV=dev
+TOKEN=some_secret_token
 ```
-To hash your secret type these to the terminal:
+To hash your token type these to the terminal:
 ```
 node
 const bcrypt = require('bcrypt');
@@ -94,7 +94,8 @@ And these are the **POST** endpoints:
 ---
 ## Usage
 
-Bearer Authorization token needs to be set in every request. 
+Bearer Authorization token needs to be set in every request. That token can be either API KEY from Database or it can also be JWT that you get from loggin in.
+
 GET example request: http://localhost:8080/api/timers.
 This will return JSON object with these key value pairs:
 ```
