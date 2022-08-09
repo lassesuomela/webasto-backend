@@ -75,21 +75,33 @@ All of these enpoints require an **API key** in the Authorization header of the 
 These are the **GET** endpoints:
 
 ```
-/robots.txt
-
 /api/timers
+/api/timers/all
 /api/status/:id
 /api/temp
+/api/temp/hour
 /api/voltage
+/api/voltage/hour
 /api/logs
+/api/logs/:page
+/api/history/:page
+/api/token
+/api/uptime
+/api/uptime/week
+/ota/version
 ```
 And these are the **POST** endpoints:
 ```
+/api/login
+/api/secret
+/api/secret/remove
 /api/timers
 /api/status/:id
 /api/temp
 /api/voltage
 /api/logs
+/api/uptime
+/ota/upload
 ```
 ---
 ## Usage
