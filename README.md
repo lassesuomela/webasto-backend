@@ -1,6 +1,12 @@
 # Heres the frontend repo
 [https://github.com/lassesuomela/webasto-web](https://github.com/lassesuomela/webasto-web)
 
+---
+# This is backend for webasto project
+
+This project is made with Node.js and the database that was used is MySQL.
+webasto.sql file is the database file that can be used to recreate database that was used in this project. It has some data already in it like 'demo' user with password of 'demo' and there are already timers and statusData populated. 
+---
 ## Things needed to get this API running
 
 Notes:
