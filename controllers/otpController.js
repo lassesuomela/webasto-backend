@@ -122,7 +122,7 @@ const verifyToken = (req, res, next) => {
                 next();
                 return;
             }else if(!otpCode){
-                return res.status(400).json({status:"error",message:"OTP koodi puuttuu mutta OTP on konfiguroitu"})
+                return res.status(400).json({status:"error",message:"OTP koodi puuttuu"})
             }
 
             req.hasOTPConfigured = true;

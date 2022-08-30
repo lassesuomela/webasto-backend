@@ -49,6 +49,19 @@ const upload = multer(
 
 const uploadFile = (req, res) => {
 
+    if(!req.jwtUsername === "demo"){
+
+        historyController.createRecord('Demo käyttäjä yritti ladata tiedoston.', req.jwtIp, req.jwtId, req.ua, (error, result) => {
+            if(error){
+                console.log(error);
+            }
+
+            res.status(200).end();
+        })
+
+        return res.json({status:"error", message:"Tämä käyttäjä ei tähän toimintoon pysty"});
+    }
+
     if(!req.jwtOTP){
         return res.json({status:"error", message:"OTP pitää olla konfiguroitu"});
     }
@@ -66,6 +79,7 @@ const uploadFile = (req, res) => {
             return res.json({status:"error", message:err});
         }
 
+        // move .bin files to binaries folder
         if(req.file.mimetype === 'application/octet-stream'){
             fs.rename('./ota/' + req.file.filename, './ota/binaries/' + req.file.filename, (err) => {
                 if(err){
