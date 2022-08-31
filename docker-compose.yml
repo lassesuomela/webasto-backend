@@ -4,7 +4,9 @@ services:
 
   # Nginx will proxy requests to Nodejs server
   reverse-proxy:
-    build: ../webasto-web/Dockerfile
+    build:
+        context: ../webasto-web
+        dockerfile: Dockerfile
     image: webasto-web:latest
     container_name: reverse_proxy_webasto-srv
     depends_on:
@@ -19,7 +21,9 @@ services:
 
   # Nodejs backend
   webasto-srv:
-    build: ./node-docker/Dockerfile
+    build:
+        context: .
+        dockerfile: Dockerfile
     image: webasto-srv:latest
     container_name: webasto-srv
     volumes:
@@ -33,7 +37,9 @@ services:
 
   # MySql server
   mysql-srv:
-    build: ./mysql-docker/Dockerfile
+    build:
+        context: ./mysql-docker
+        dockerfile: Dockerfile
     image: webasto-mysql:latest
     container_name: webasto-mysql
     ports:
@@ -43,3 +49,7 @@ services:
     environment:
       - MYSQL_DATABASE=${DB_DATABASE}
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - webasto-mysql:/var/lib/mysql
+volumes:
+    webasto-mysql:
