@@ -1,5 +1,5 @@
 # Heres the frontend repo
-[https://github.com/lassesuomela/webasto-web](https://github.com/lassesuomela/webasto-web)
+[webasto-web](https://github.com/lassesuomela/webasto-web)
 
 ---
 # This is backend for webasto project
@@ -12,12 +12,11 @@ webasto.sql file is the database file that can be used to recreate database that
 
 Notes:
  - Nginx is configured to only allow request from cloudflares ip addresses.
- - ./cloudflare.sh adds exception for cloudflares ip addresses to http and https ports
+ - `./cloudflare.sh` adds exception for cloudflares ip addresses to http and https ports
 
 These steps are required to do:
-1. Run `npm install` to install dependencies
-2. Hash a secret key with bcrypt
-3. MySQL server with webasto database provided in the sql file
+1. Run `npm i` to install dependencies
+2. Hash a secret key with bcrypt or just type something
 4. Create and edit **.env** file
 5. Run `npm start`
 
@@ -25,7 +24,7 @@ These are optional steps but required if you want to use nginx:
 1. Configure reverse_proxy/nginx.conf with paths to SSL certificates and server_name
 2. Configure docker-compose.yml with paths to SSL certificates 
 3. Change config/auth.js files line `ipData.country !== 'FI'` from 'FI' to your country code or comment the whole if statement if you are running this locally. (Because it will not find a country code with local ip address and it will return 403 status code.)
-4. If nginx is properly configurated you can run `./build.sh` and `./restart.sh` to build a docker image and run it
+4. If nginx is properly configurated you can run `./restart.sh` to build a docker images and run them.
    
 ---
 
