@@ -65,7 +65,6 @@ server_name
 Private key and public key paths need to match your configuration. And if you need to change docker containers ports, you can do that here. But then `reverse_proxy/nginx.conf` proxy_pass need to reconfigured.
 ```
 volumes:
-      - ./reverse_proxy/nginx.conf:/etc/nginx/nginx.conf
       - /root/webasto-backend/public_key.pem:/root/webasto-backend/public_key.pem
       - /root/webasto-backend/private_key.key:/root/webasto-backend/private_key.key
 	  
