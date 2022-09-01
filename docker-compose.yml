@@ -1,5 +1,4 @@
 version: '3'
-
 services:
 
   # Nginx will proxy requests to Nodejs server
@@ -14,10 +13,7 @@ services:
     volumes:
       - /root/webasto-backend/saunagaming.com.pem:/root/webasto-backend/saunagaming.com.pem
       - /root/webasto-backend/saunagaming.com.key:/root/webasto-backend/saunagaming.com.key
-    ports:
-      - 80:80
     network_mode: "host"
-
   # Nodejs backend
   webasto-srv:
     build:
@@ -27,8 +23,6 @@ services:
     container_name: webasto-srv
     volumes:
       - /root/webasto-backend/ota:/app/ota
-    ports:
-      - 8080:8080
     network_mode: "host"
     restart: on-failure
     environment:
@@ -41,8 +35,6 @@ services:
         dockerfile: Dockerfile
     image: webasto-mysql:latest
     container_name: webasto-mysql
-    ports:
-      - 3306:3306
     network_mode: "host"
     restart: on-failure
     environment:
