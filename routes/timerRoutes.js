@@ -5,7 +5,7 @@ let timerController = require('../controllers/timerController');
 const cache = require('../configs/cache');
 
 router.get('/timers', cache.checkCache, timerController.getCurrentDaysTimer);
-router.get('/timers/all', cache.checkCache, timerController.displayAllTimers);
+router.get('/timers/all', timerController.displayAllTimers);
 
 router.post('/timers', timerController.modifyTimers);
 

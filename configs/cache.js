@@ -1,6 +1,6 @@
 const nodeCache = require('node-cache');
 
-const cache = new nodeCache({stdTTL: 60*5});
+const cache = new nodeCache({ stdTTL: 300, checkperiod: 300 });
 
 const checkCache = (req, res, next) => {
     // use url as key
