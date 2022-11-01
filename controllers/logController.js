@@ -15,6 +15,11 @@ const updateLogs = (req, res) => {
         return res.sendStatus(400);
     }
 
+    // dont allow onTime to be 0 as there is no point on storing that data
+    if(onTime === 0){
+        return res.sendStatus(400);
+    }
+
     let settings = {"startTime": startTime, "endTime": endTime, "onTime": onTime};
 
     // attempt to query mysql server with the sql_query 

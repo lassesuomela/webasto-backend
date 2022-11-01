@@ -16,7 +16,7 @@ const getVoltage = (req, res) => {
         if(result.length > 0){
             let currentVoltage = result[0].voltage;
 
-            let data = {status:"success",voltage:currentVoltage};
+            let data = {status:"success",voltage:currentVoltage.toFixed(1)};
             // cache data
             cache.saveCache(key, data);
 
