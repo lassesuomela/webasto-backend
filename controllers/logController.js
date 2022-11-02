@@ -16,7 +16,7 @@ const updateLogs = (req, res) => {
     }
 
     // dont allow onTime to be 0 as there is no point on storing that data
-    if(onTime === 0){
+    if(onTime === 0 || onTime === "0"){
         return res.sendStatus(400);
     }
 
