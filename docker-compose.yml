@@ -17,6 +17,7 @@ services:
     ports:
       - 80:80
       - 443:443
+    restart: unless-stopped
   # Nodejs backend
   webasto-srv:
     build:
@@ -29,7 +30,7 @@ services:
     network_mode: "host"
     ports:
       - 8080:8080
-    restart: on-failure
+    restart: unless-stopped
     environment:
       - DOCKER_APP_PORT=8080
 
@@ -43,7 +44,7 @@ services:
     network_mode: "host"
     ports:
       - 3306:3306
-    restart: on-failure
+    restart: unless-stopped
     environment:
       - MYSQL_DATABASE=${DB_DATABASE}
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
