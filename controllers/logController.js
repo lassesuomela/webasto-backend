@@ -8,10 +8,10 @@ const updateLogs = (req, res) => {
     cache.deleteCache(key);
 
     // get variables from query
-    const {startTime, endTime, onTime} = req.body;
+    const {startTime, onTime} = req.body;
   
     // if voltage is undefined then send 400 status code to client client
-    if(startTime === undefined || endTime === undefined || onTime === undefined){
+    if(startTime === undefined || onTime === undefined){
         return res.sendStatus(400);
     }
 
@@ -19,6 +19,8 @@ const updateLogs = (req, res) => {
     if(onTime === 0 || onTime === "0"){
         return res.sendStatus(400);
     }
+
+    const endTime = new Date().toLocaleTimeString();
 
     let settings = {"startTime": startTime, "endTime": endTime, "onTime": onTime};
 
