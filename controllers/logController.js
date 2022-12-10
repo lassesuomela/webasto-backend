@@ -20,7 +20,7 @@ const updateLogs = (req, res) => {
         return res.sendStatus(400);
     }
 
-    const endTime = new Date().toLocaleTimeString();
+    const endTime = new Date().toLocaleTimeString("fi");
 
     let settings = {"startTime": startTime, "endTime": endTime, "onTime": onTime};
 
