@@ -8,10 +8,10 @@ const updateLogs = (req, res) => {
     cache.deleteCache(key);
 
     // get variables from query
-    const {startTime, onTime} = req.body;
+    const {onTime} = req.body;
   
-    // if voltage is undefined then send 400 status code to client client
-    if(startTime === undefined || onTime === undefined){
+    // if ontime is undefined then send 400 status code to client client
+    if(onTime === undefined){
         return res.sendStatus(400);
     }
 
@@ -20,9 +20,12 @@ const updateLogs = (req, res) => {
         return res.sendStatus(400);
     }
 
-    const endTime = new Date().toLocaleTimeString("fi");
+    const endTime = new Date();
+    let startTime = new Date();
 
-    let settings = {"startTime": startTime, "endTime": endTime, "onTime": onTime};
+    startTime.setMinutes(endTime.getMinutes() - onTime);
+
+    const settings = {"startTime": startTime.toLocaleTimeString("fi"), "endTime": endTime.toLocaleTimeString("fi"), "onTime": onTime};
 
     // attempt to query mysql server with the sql_query 
     logs.create(settings, (error, result) =>{
