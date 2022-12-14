@@ -25,7 +25,7 @@ const updateLogs = (req, res) => {
 
     startTime.setMinutes(endTime.getMinutes() - onTime);
 
-    const settings = {"startTime": startTime.toLocaleTimeString("fi", { hour: "2-digit", minute: "2-digit", second: "2-digit"}), "endTime": endTime.toLocaleTimeString("fi", { hour: "2-digit", minute: "2-digit", second: "2-digit"}), "onTime": onTime};
+    const settings = {"startTime": startTime.toLocaleTimeString("fi", { hour: "2-digit", minute: "2-digit", second: "2-digit"}).replaceAll(".",":"), "endTime": endTime.toLocaleTimeString("fi", { hour: "2-digit", minute: "2-digit", second: "2-digit"}).replaceAll(".",":"), "onTime": onTime};
 
     // attempt to query mysql server with the sql_query 
     logs.create(settings, (error, result) =>{
