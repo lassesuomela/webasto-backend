@@ -53,6 +53,7 @@ const modifyStatus = (req, res) =>{
     const key = req.originalUrl;
     cache.deleteCache(key);
 
+    console.log("Body: " + req.body)
     let {newStatus, onTime, pulseSent, rssi} = req.body;
     let id = req.params.id;
     
@@ -69,9 +70,11 @@ const modifyStatus = (req, res) =>{
         return res.json({status:"error", message:"onTime value is too large"});
     }
 
-    let data = {
+    const data = {
         "newStatus": newStatus, "onTime":onTime, "pulseSent":pulseSent, "rssi":rssi, "id":id
     }
+
+    console.log("Data: " + data)
     
     // attempt to query mysql server with the sql_query 
     status.update(data, (error, result) =>{
