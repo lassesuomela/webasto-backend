@@ -20,12 +20,23 @@ const updateLogs = (req, res) => {
         return res.sendStatus(400);
     }
 
-    const endTime = new Date();
+    let endTime = new Date();
     let startTime = new Date();
+
+    const options = {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+        timeZone: "Europe/Helsinki"
+    };
 
     startTime.setMinutes(endTime.getMinutes() - onTime);
 
-    const settings = {"startTime": startTime.toLocaleTimeString("fi", { hour: "2-digit", minute: "2-digit", second: "2-digit"}).replaceAll(".",":"), "endTime": endTime.toLocaleTimeString("fi", { hour: "2-digit", minute: "2-digit", second: "2-digit"}).replaceAll(".",":"), "onTime": onTime};
+    startTime = startTime.toLocaleTimeString("fi-FI", options).replace(/\./g, ":");
+    endTime = endTime.toLocaleTimeString("fi-FI", options).replace(/\./g, ":");
+
+    const settings = { "startTime": startTime, "endTime": endTime, "onTime": onTime };
 
     // attempt to query mysql server with the sql_query 
     logs.create(settings, (error, result) =>{
