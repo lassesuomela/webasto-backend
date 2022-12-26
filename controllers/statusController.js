@@ -81,8 +81,6 @@ const modifyStatus = (req, res) =>{
         155: "Stop but already off (switch)"
     };
 
-    console.log(`Status changed. New status: ${newStatus}. Rssi: ${rssi}. [${rssiMeanings[rssi]}] | ${req.ip} | ${req.ua}`)
-
     // attempt to query mysql server with the sql_query 
     status.update(data, (error, result) =>{
         if (error){
@@ -91,7 +89,9 @@ const modifyStatus = (req, res) =>{
             return res.sendStatus(500);
         }
 
-        return res.sendStatus(200);
+        res.sendStatus(200);
+
+        console.log(`Status changed. New status: ${newStatus}. Rssi: ${rssi}. [${rssiMeanings[rssi]}] | ${req.ip} | ${req.ua}`);
     });
 };
 
