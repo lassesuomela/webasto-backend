@@ -19,7 +19,7 @@ const getStatus = (req, res) =>{
             console.log(error);
             return res.sendStatus(500);
         }
-        
+
         if(result.length > 0){
             let currentStatus = result[0].status;
             let onTime = result[0].onTime;
@@ -53,7 +53,6 @@ const modifyStatus = (req, res) =>{
     const key = req.originalUrl;
     cache.deleteCache(key);
 
-    console.log("Body: " + req.body)
     let {newStatus, onTime, pulseSent, rssi} = req.body;
     let id = req.params.id;
     
@@ -74,8 +73,16 @@ const modifyStatus = (req, res) =>{
         "newStatus": newStatus, "onTime":onTime, "pulseSent":pulseSent, "rssi":rssi, "id":id
     }
 
-    console.log("Data: " + data)
-    
+    const rssiMeanings = {
+        20: "Stop (timer)",
+        40: "Start (timer)",
+        100: "Start (switch)",
+        150: "Stop (switch)",
+        155: "Stop but already off (switch)"
+    };
+
+    console.log(`Status changed. New status: ${newStatus}. Rssi: ${rssi}. [${rssiMeanings[rssi]}] | ${req.ip} | ${req.ua}`)
+
     // attempt to query mysql server with the sql_query 
     status.update(data, (error, result) =>{
         if (error){
@@ -83,8 +90,7 @@ const modifyStatus = (req, res) =>{
             console.log(error);
             return res.sendStatus(500);
         }
-        
-        //console.log(`New status: ${newStatus}`);
+
         return res.sendStatus(200);
     });
 };
