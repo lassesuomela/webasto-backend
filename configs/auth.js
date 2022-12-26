@@ -55,7 +55,7 @@ const auth = (req, res, next) => {
             console.log(error);
         }
         // found match for the apikey in the db
-        if(result.length > 0 && req.ua !== "Arduino/2.2.0"){
+        if(result.length > 0){
 
             historyController.createRecord('API avaimella tunnistauduttu.', ip, result[0].id, req.ua, (error, result) => {
                 if(error){
